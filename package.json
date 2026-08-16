@@ -4,7 +4,8 @@
   "description": "Edit and validate Microsoft Power Automate WDL expressions in Visual Studio Code.",
   "version": "0.0.1",
   "publisher": "aepcodes",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-only",
+  "icon": "assets/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/ynot3363/power-automate-wdl-expression-tools.git"
@@ -12,12 +13,26 @@
   "bugs": {
     "url": "https://github.com/ynot3363/power-automate-wdl-expression-tools/issues"
   },
+  "homepage": "https://github.com/ynot3363/power-automate-wdl-expression-tools#readme",
   "engines": {
     "vscode": "^1.125.0"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Formatters",
+    "Linters"
   ],
+  "keywords": [
+    "power-automate",
+    "logic-apps",
+    "wdl",
+    "expressions",
+    "workflow"
+  ],
+  "galleryBanner": {
+    "color": "#071b3d",
+    "theme": "dark"
+  },
   "contributes": {
     "configuration": {
       "title": "Power Automate WDL Expressions",
@@ -80,10 +95,6 @@
     ]
   },
   "main": "./dist/extension.js",
-  "files": [
-    "dist",
-    "README.md"
-  ],
   "scripts": {
     "build": "npm run build:extension && npm run build:tests",
     "build:extension": "esbuild src/extension/extension.ts --bundle --external:vscode --format=cjs --platform=node --target=node20 --outfile=dist/extension.js",

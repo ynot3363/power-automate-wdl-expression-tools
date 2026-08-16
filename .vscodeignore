@@ -1,0 +1,16 @@
+.agents/**
+.codex/**
+.github/**
+.vscode/**
+.vscode-test/**
+docs/**
+scripts/**
+src/**
+test/**
+.gitignore
+AGENTS.md
+eslint.config.mjs
+package-lock.json
+tsconfig*.json
+*.vsix
+*.log

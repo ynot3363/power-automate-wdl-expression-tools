@@ -1,0 +1,19 @@
+# Changelog
+
+All notable changes to Power Automate WDL Expression Tools are documented in
+this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [Unreleased]
+
+### Added
+
+- Dedicated `.wdlexpr` language mode and syntax highlighting.
+- Fault-tolerant WDL lexer, parser, typed AST, and source-range utilities.
+- AST-aware document/selection formatting and expression minification.
+- Local catalog-backed hover, completion, and signature help.
+- Conservative syntax, function, argument-count, and argument-type diagnostics.
+- Commands for new scratch expressions, formatting, and minification.
+- Shared versioned document-analysis cache and lifecycle cleanup.
+- Unit, corpus, grammar, and Extension Host integration test coverage.
+
+[Unreleased]: https://github.com/ynot3363/power-automate-wdl-expression-tools/commits/main
