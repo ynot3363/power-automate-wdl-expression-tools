@@ -9,7 +9,7 @@ is the editable master; `icon.png` is its 256 by 256 pixel Marketplace export.
 The mark follows the site's production standards:
 
 - flat, matte geometry with no gradients, glow, bevel, or drop shadow;
-- a warm stone disc on a navy brand field with generous clear space;
+- a warm stone disc on a transparent canvas with generous clear space;
 - navy structural braces, citrus relay nodes, and a thin brass perimeter;
 - no text, third-party logo, trademark, or source artwork;
 - simple shapes that remain legible at small extension-icon sizes.

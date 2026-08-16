@@ -75,6 +75,7 @@ describe("Marketplace metadata", () => {
     expect(iconSource).toContain("#faf1e2");
     expect(iconSource).toContain("#e38a3b");
     expect(iconSource).toContain("#ba8431");
+    expect(iconSource).not.toContain('<rect width="64" height="64"');
     expect(iconSource).not.toMatch(/gradient|filter|shadow/i);
     expect(readRepositoryFile("assets/README.md")).toContain("Asset provenance");
   });
