@@ -15,6 +15,7 @@ interface MarketplaceManifest {
   readonly homepage: string;
   readonly categories: readonly string[];
   readonly keywords: readonly string[];
+  readonly galleryBanner: { readonly color: string; readonly theme: string };
 }
 
 const repositoryRoot = process.cwd();
@@ -45,6 +46,7 @@ describe("Marketplace metadata", () => {
     expect(manifest.keywords).toEqual(
       expect.arrayContaining(["power-automate", "logic-apps", "wdl", "expressions"]),
     );
+    expect(manifest.galleryBanner).toEqual({ color: "#18364a", theme: "dark" });
   });
 
   it("ships the complete AGPL-3.0 license and public release documents", () => {
@@ -64,10 +66,16 @@ describe("Marketplace metadata", () => {
 
   it("uses a square PNG Marketplace icon and records its provenance", () => {
     const icon = readFileSync(join(repositoryRoot, "assets/icon.png"));
+    const iconSource = readRepositoryFile("assets/icon.svg");
 
     expect(icon.subarray(1, 4).toString("ascii")).toBe("PNG");
     expect(icon.readUInt32BE(16)).toBe(256);
     expect(icon.readUInt32BE(20)).toBe(256);
+    expect(iconSource).toContain("#18364a");
+    expect(iconSource).toContain("#faf1e2");
+    expect(iconSource).toContain("#e38a3b");
+    expect(iconSource).toContain("#ba8431");
+    expect(iconSource).not.toMatch(/gradient|filter|shadow/i);
     expect(readRepositoryFile("assets/README.md")).toContain("Asset provenance");
   });
 

@@ -11,6 +11,7 @@ test/**
 .gitignore
 AGENTS.md
 assets/README.md
+assets/icon.svg
 eslint.config.mjs
 package-lock.json
 tsconfig*.json

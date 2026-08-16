@@ -1,14 +1,28 @@
 # Asset provenance
 
-## `icon.png`
+## `icon.svg` and `icon.png`
 
-The extension icon was generated for this project with OpenAI's built-in image
-generation tool on 2026-08-16 from an original prompt requesting an abstract
-curly-brace and workflow-node mark. It was resized to 256 by 256 pixels for the
-Visual Studio Marketplace. It does not intentionally incorporate third-party
-logos, trademarks, or source artwork.
+The extension icon is an original deterministic vector adaptation of the
+**Rosone Relay** visual system used by Anthony Poulin's personal site. The SVG
+is the editable master; `icon.png` is its 256 by 256 pixel Marketplace export.
 
-Prompt summary: a flat, vector-friendly expression mark combining matching
-curly braces with a connected three-node workflow path, on a deep navy square,
-using cyan/blue with one amber accent; no text, letters, logos, trademarks, or
-watermarks.
+The mark follows the site's production standards:
+
+- flat, matte geometry with no gradients, glow, bevel, or drop shadow;
+- a warm stone disc on a navy brand field with generous clear space;
+- navy structural braces, citrus relay nodes, and a thin brass perimeter;
+- no text, third-party logo, trademark, or source artwork;
+- simple shapes that remain legible at small extension-icon sizes.
+
+The exact production colors come from the site's selected logo specification:
+
+| Role | Color |
+| --- | --- |
+| Navy structure | `#18364A` |
+| Warm stone field | `#FAF1E2` |
+| Citrus relay nodes | `#E38A3B` |
+| Brass perimeter | `#BA8431` |
+
+The curly braces retain the extension's WDL expression identity. The diagonal
+three-node relay carries the site's connection-and-exchange motif into the
+Power Automate tooling context.
