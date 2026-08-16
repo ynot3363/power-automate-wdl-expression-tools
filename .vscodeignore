@@ -4,11 +4,13 @@
 .vscode/**
 .vscode-test/**
 docs/**
+out/**
 scripts/**
 src/**
 test/**
 .gitignore
 AGENTS.md
+assets/README.md
 eslint.config.mjs
 package-lock.json
 tsconfig*.json

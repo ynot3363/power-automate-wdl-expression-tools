@@ -1,0 +1,89 @@
+name: Release VSIX
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Validate, package, and create GitHub Release
+    if: github.repository == 'ynot3363/power-automate-wdl-expression-tools'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Validate tag, manifest, lockfile, and changelog versions
+        id: release
+        shell: bash
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          lock_version="$(node -p "require('./package-lock.json').version")"
+          expected_tag="v${version}"
+          if [[ ! "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "package.json version must be stable SemVer: ${version}" >&2
+            exit 1
+          fi
+          if [[ "${GITHUB_REF_NAME}" != "${expected_tag}" ]]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match ${expected_tag}." >&2
+            exit 1
+          fi
+          if [[ "${lock_version}" != "${version}" ]]; then
+            echo "package-lock.json version ${lock_version} does not match ${version}." >&2
+            exit 1
+          fi
+          if ! grep -Fq "## [${version}]" CHANGELOG.md; then
+            echo "CHANGELOG.md has no ${version} release heading." >&2
+            exit 1
+          fi
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+          echo "vsix=power-automate-wdl-expression-tools-${version}.vsix" >> "${GITHUB_OUTPUT}"
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run repository validation
+        run: npm run validate
+
+      - name: Run Extension Host integration tests
+        run: xvfb-run -a npm run test:integration
+
+      - name: Package VSIX
+        run: npm run package:vsix
+
+      - name: Verify VSIX name, version, and contents
+        run: npm run package:verify -- "${{ steps.release.outputs.vsix }}"
+
+      - name: Generate SHA-256 checksum
+        run: sha256sum "${{ steps.release.outputs.vsix }}" > "${{ steps.release.outputs.vsix }}.sha256"
+
+      - name: Create GitHub Release and attach VSIX
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "${GITHUB_REF_NAME}"
+          "${{ steps.release.outputs.vsix }}"
+          "${{ steps.release.outputs.vsix }}.sha256"
+          --verify-tag
+          --generate-notes
+          --title "Power Automate WDL Expression Tools ${{ steps.release.outputs.version }}"

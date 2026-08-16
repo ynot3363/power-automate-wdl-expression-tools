@@ -6,6 +6,7 @@ interface MarketplaceManifest {
   readonly name: string;
   readonly displayName: string;
   readonly description: string;
+  readonly version: string;
   readonly publisher: string;
   readonly license: string;
   readonly icon: string;
@@ -57,7 +58,8 @@ describe("Marketplace metadata", () => {
     expect(readme).toContain("## Current limitations");
     expect(readme).toContain("Power Automate: Minify WDL Expression");
     expect(readme).toContain("```wdl");
-    expect(changelog).toContain("## [Unreleased]");
+    const manifest = JSON.parse(readRepositoryFile("package.json")) as MarketplaceManifest;
+    expect(changelog).toContain(`## [${manifest.version}] - Unreleased`);
   });
 
   it("uses a square PNG Marketplace icon and records its provenance", () => {
