@@ -30,6 +30,8 @@ export { WdlFormatter } from "./formatter/wdlFormatter";
 export type { WdlType } from "./analyzer/wdlTypes";
 export { isWdlType, wdlTypes } from "./analyzer/wdlTypes";
 export { WdlFunctionCatalog } from "./functions/catalog";
+export { wdlFunctionCatalog } from "./functions/defaultCatalog";
+export { initialFunctionDefinitions } from "./functions/initialFunctionDefinitions";
 export {
   loadWdlFunctionDefinitions,
   validateWdlFunctionDefinitions,
