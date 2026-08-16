@@ -16,6 +16,23 @@ export async function run(): Promise<void> {
   await extension.activate();
   equal(extension.isActive, true, "The extension should activate.");
 
+  const packageJson = extension.packageJSON as {
+    contributes?: {
+      grammars?: readonly { scopeName?: string }[];
+      languages?: readonly { configuration?: string; id?: string }[];
+    };
+  };
+  equal(
+    packageJson.contributes?.languages?.[0]?.configuration,
+    "./language-configuration.json",
+    "The WDL language should contribute its editor configuration.",
+  );
+  equal(
+    packageJson.contributes.grammars?.[0]?.scopeName,
+    "source.power-automate-wdl-expression",
+    "The WDL language should contribute its TextMate grammar.",
+  );
+
   const languages = await vscode.languages.getLanguages();
   ok(languages.includes(LANGUAGE_ID), "The WDL language should be registered.");
 

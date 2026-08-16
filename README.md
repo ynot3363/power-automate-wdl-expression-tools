@@ -22,6 +22,16 @@ Power Automate: New WDL Expression
 The command opens an untitled editor in the same language mode. The extension
 does not register `.wdl` or `.paexpr` files.
 
+## Editing Support
+
+The WDL language mode auto-closes and matches parentheses and brackets and
+auto-closes single quotes. Syntax highlighting follows the active VS Code theme
+for generic function calls, WDL strings (including doubled-apostrophe escapes),
+numbers, boolean and null literals, delimiters, and property/index access.
+
+Function names are highlighted syntactically. Catalog-backed function validity
+and semantic analysis are delivered by later implementation stories.
+
 ## Prerequisites
 
 - Node.js 24 or another Node.js version supported by the package toolchain

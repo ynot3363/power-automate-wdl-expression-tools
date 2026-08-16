@@ -1,0 +1,110 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Power Automate WDL Expression",
+  "scopeName": "source.power-automate-wdl-expression",
+  "patterns": [
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#literals"
+    },
+    {
+      "include": "#functions"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#delimiters"
+    },
+    {
+      "include": "#identifiers"
+    }
+  ],
+  "repository": {
+    "strings": {
+      "patterns": [
+        {
+          "match": "'(?:''|[^'])*'",
+          "name": "string.quoted.single.wdl-expression"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "match": "(?<![A-Za-z0-9_])-?\\d+\\.\\d+(?![A-Za-z0-9_])",
+          "name": "constant.numeric.float.wdl-expression"
+        },
+        {
+          "match": "(?<![A-Za-z0-9_])-?\\d+(?![A-Za-z0-9_])",
+          "name": "constant.numeric.integer.wdl-expression"
+        }
+      ]
+    },
+    "literals": {
+      "patterns": [
+        {
+          "match": "\\b(?:true|false)\\b",
+          "name": "constant.language.boolean.wdl-expression"
+        },
+        {
+          "match": "\\bnull\\b",
+          "name": "constant.language.null.wdl-expression"
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*(?=\\s*\\()",
+          "name": "entity.name.function.wdl-expression"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "match": "\\?",
+          "name": "keyword.operator.safe-access.wdl-expression"
+        },
+        {
+          "match": "\\.",
+          "name": "punctuation.accessor.dot.wdl-expression"
+        },
+        {
+          "match": "@",
+          "name": "keyword.operator.expression.wdl-expression"
+        }
+      ]
+    },
+    "delimiters": {
+      "patterns": [
+        {
+          "match": "[()]",
+          "name": "punctuation.section.parens.wdl-expression"
+        },
+        {
+          "match": "[\\[\\]]",
+          "name": "punctuation.section.brackets.wdl-expression"
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.arguments.wdl-expression"
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+          "name": "variable.other.wdl-expression"
+        }
+      ]
+    }
+  }
+}

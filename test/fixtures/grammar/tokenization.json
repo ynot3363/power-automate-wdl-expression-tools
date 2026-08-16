@@ -1,0 +1,41 @@
+[
+  {
+    "name": "nested function call",
+    "source": "if(equals(variables('Name'),'Anthony'),true,false)",
+    "tokens": [
+      ["if", "entity.name.function.wdl-expression"],
+      ["equals", "entity.name.function.wdl-expression"],
+      ["variables", "entity.name.function.wdl-expression"],
+      ["'Name'", "string.quoted.single.wdl-expression"],
+      ["true", "constant.language.boolean.wdl-expression"]
+    ]
+  },
+  {
+    "name": "escaped string",
+    "source": "concat('It''s working', '')",
+    "tokens": [
+      ["'It''s working'", "string.quoted.single.wdl-expression"],
+      ["''", "string.quoted.single.wdl-expression"]
+    ]
+  },
+  {
+    "name": "numbers and null",
+    "source": "if(true, -42, 3.14), null",
+    "tokens": [
+      ["-42", "constant.numeric.integer.wdl-expression"],
+      ["3.14", "constant.numeric.float.wdl-expression"],
+      ["null", "constant.language.null.wdl-expression"]
+    ]
+  },
+  {
+    "name": "property and safe index access",
+    "source": "@outputs('Get_User')?['body/Email'].value",
+    "tokens": [
+      ["@", "keyword.operator.expression.wdl-expression"],
+      ["outputs", "entity.name.function.wdl-expression"],
+      ["?", "keyword.operator.safe-access.wdl-expression"],
+      ["[", "punctuation.section.brackets.wdl-expression"],
+      [".", "punctuation.accessor.dot.wdl-expression"]
+    ]
+  }
+]

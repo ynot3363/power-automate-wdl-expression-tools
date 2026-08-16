@@ -31,9 +31,17 @@
         "aliases": [
           "Power Automate WDL Expression"
         ],
+        "configuration": "./language-configuration.json",
         "extensions": [
           ".wdlexpr"
         ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "power-automate-wdl-expression",
+        "scopeName": "source.power-automate-wdl-expression",
+        "path": "./syntaxes/power-automate-wdl-expression.tmLanguage.json"
       }
     ]
   },
@@ -62,6 +70,8 @@
     "eslint": "10.0.1",
     "typescript": "6.0.3",
     "typescript-eslint": "8.67.0",
-    "vitest": "4.1.10"
+    "vitest": "4.1.10",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2"
   }
 }
