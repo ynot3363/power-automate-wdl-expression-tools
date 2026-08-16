@@ -47,6 +47,16 @@
       {
         "command": "powerAutomateWdlExpressions.newExpression",
         "title": "Power Automate: New WDL Expression"
+      },
+      {
+        "command": "powerAutomateWdlExpressions.formatExpression",
+        "title": "Power Automate: Format WDL Expression",
+        "enablement": "editorLangId == power-automate-wdl-expression"
+      },
+      {
+        "command": "powerAutomateWdlExpressions.minifyExpression",
+        "title": "Power Automate: Minify WDL Expression",
+        "enablement": "editorLangId == power-automate-wdl-expression"
       }
     ],
     "languages": [

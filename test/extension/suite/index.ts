@@ -8,6 +8,10 @@ const EXTENSION_ID = "aepcodes.power-automate-wdl-expression-tools";
 const LANGUAGE_ID = "power-automate-wdl-expression";
 const NEW_EXPRESSION_COMMAND_ID =
   "powerAutomateWdlExpressions.newExpression";
+const FORMAT_EXPRESSION_COMMAND_ID =
+  "powerAutomateWdlExpressions.formatExpression";
+const MINIFY_EXPRESSION_COMMAND_ID =
+  "powerAutomateWdlExpressions.minifyExpression";
 
 export async function run(): Promise<void> {
   const extension = vscode.extensions.getExtension(EXTENSION_ID);
@@ -65,6 +69,14 @@ export async function run(): Promise<void> {
     commands.includes(NEW_EXPRESSION_COMMAND_ID),
     "The new-expression command should be registered.",
   );
+  ok(
+    commands.includes(FORMAT_EXPRESSION_COMMAND_ID),
+    "The format-expression command should be registered.",
+  );
+  ok(
+    commands.includes(MINIFY_EXPRESSION_COMMAND_ID),
+    "The minify-expression command should be registered.",
+  );
 
   const fixtureDirectory = await mkdtemp(join(tmpdir(), "wdlexpr-test-"));
   const fixturePath = join(fixtureDirectory, "automatic.wdlexpr");
@@ -88,6 +100,7 @@ export async function run(): Promise<void> {
       "The new document should use the WDL language.",
     );
 
+    await verifyUtilityCommands();
     await verifyFormatting();
     await verifyHover();
     await verifySignatureHelp();
@@ -97,6 +110,118 @@ export async function run(): Promise<void> {
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
     await rm(fixtureDirectory, { force: true, recursive: true });
   }
+}
+
+async function verifyUtilityCommands(): Promise<void> {
+  await vscode.commands.executeCommand(
+    "workbench.action.revertAndCloseActiveEditor",
+  );
+  assertNoActiveEditor();
+  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+  await vscode.commands.executeCommand(MINIFY_EXPRESSION_COMMAND_ID);
+
+  const source = "if(equals(1,1),'yes','no')";
+  const formatDocument = await openExpression(source);
+  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+  equal(
+    formatDocument.getText(),
+    "if(\n    equals(1, 1),\n    'yes',\n    'no'\n)",
+    "The format command should transform a complete document.",
+  );
+  await vscode.commands.executeCommand("default:undo");
+  await delay(50);
+  equal(
+    formatDocument.getText(),
+    source,
+    "The format command edit should participate in normal undo.",
+  );
+
+  const configuration = vscode.workspace.getConfiguration(
+    "powerAutomateWdlExpressions.format",
+  );
+  try {
+    await configuration.update(
+      "indentSize",
+      2,
+      vscode.ConfigurationTarget.Global,
+    );
+    await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+    equal(
+      formatDocument.getText(),
+      "if(\n  equals(1, 1),\n  'yes',\n  'no'\n)",
+      "The format command should share configured provider indentation.",
+    );
+  } finally {
+    await resetFormattingConfiguration(configuration);
+  }
+
+  const selectionDocument = await openExpression(
+    "concat('left','right')\nif(equals(1,1),'yes','no')",
+  );
+  const selectionEditor = vscode.window.activeTextEditor;
+  ok(selectionEditor, "The selection command fixture should have an editor.");
+  selectionEditor.selection = new vscode.Selection(
+    selectionDocument.lineAt(1).range.start,
+    selectionDocument.lineAt(1).range.end,
+  );
+  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+  equal(
+    selectionDocument.getText(),
+    "concat('left','right')\nif(\n    equals(1, 1),\n    'yes',\n    'no'\n)",
+    "The format command should transform only the selected expression.",
+  );
+
+  const multiline =
+    "if(\n    equals(\n        variables('Name'),\n        ''\n    ),\n    'Unknown',\n    variables('Name')\n)";
+  const minifyDocument = await openExpression(multiline);
+  await vscode.commands.executeCommand(MINIFY_EXPRESSION_COMMAND_ID);
+  equal(
+    minifyDocument.getText(),
+    "if(equals(variables('Name'),''),'Unknown',variables('Name'))",
+    "The minify command should use compact AST output.",
+  );
+
+  const incompleteDocument = await openExpression("concat('value',");
+  await vscode.commands.executeCommand(MINIFY_EXPRESSION_COMMAND_ID);
+  equal(
+    incompleteDocument.getText(),
+    "concat('value',",
+    "Unsafe incomplete input should remain unchanged.",
+  );
+
+  const unsupportedDocument = await vscode.workspace.openTextDocument({
+    language: "plaintext",
+    content: "if(equals(1,1),'yes','no')",
+  });
+  await vscode.window.showTextDocument(unsupportedDocument);
+  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+  equal(
+    unsupportedDocument.getText(),
+    "if(equals(1,1),'yes','no')",
+    "Unsupported language documents should remain unchanged.",
+  );
+
+  const multiSelectionDocument = await openExpression(source);
+  const multiSelectionEditor = vscode.window.activeTextEditor;
+  ok(multiSelectionEditor, "The multi-selection fixture should have an editor.");
+  multiSelectionEditor.selections = [
+    new vscode.Selection(0, 0, 0, 0),
+    new vscode.Selection(0, 3, 0, 3),
+  ];
+  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+  equal(
+    multiSelectionDocument.getText(),
+    source,
+    "Multiple unrelated selections should remain unchanged.",
+  );
+}
+
+function assertNoActiveEditor(): void {
+  equal(
+    vscode.window.activeTextEditor,
+    undefined,
+    "The no-editor command fixture should start without an active editor.",
+  );
 }
 
 async function verifyFormatting(): Promise<void> {

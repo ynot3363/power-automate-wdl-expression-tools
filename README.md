@@ -38,6 +38,11 @@ Use VS Code's **Format Document** command to format a complete expression, or
 select one complete expression and run **Format Selection**. Unsafe partial or
 incomplete selections are left unchanged.
 
+The Command Palette also provides **Power Automate: Format WDL Expression** and
+**Power Automate: Minify WDL Expression**. Each command transforms the single
+selection when one is active, or the complete document otherwise. They only run
+in WDL expression editors and leave incomplete or unsafe input unchanged.
+
 Formatting uses four spaces by default. Configure
 `powerAutomateWdlExpressions.format.indentSize` to change the indentation width
 or set `powerAutomateWdlExpressions.format.useTabs` to `true` to indent with

@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { registerNewExpressionCommand } from "./commands/newExpression";
+import { registerExpressionTransformCommands } from "./commands/transformExpression";
 import { WdlDiagnosticsManager } from "./diagnostics/wdlDiagnosticsManager";
 import { WdlCompletionProvider } from "./providers/completionProvider";
 import {
@@ -19,6 +20,7 @@ export function activate(context: vscode.ExtensionContext): void {
   const analysis = new DocumentAnalysisService();
   context.subscriptions.push(
     registerNewExpressionCommand(),
+    ...registerExpressionTransformCommands(analysis),
     vscode.languages.registerDocumentFormattingEditProvider(
       wdlDocumentSelector,
       new WdlDocumentFormattingProvider(analysis),
