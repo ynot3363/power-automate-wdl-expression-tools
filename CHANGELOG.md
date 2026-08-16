@@ -3,7 +3,7 @@
 All notable changes to Power Automate WDL Expression Tools are documented in
 this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.1.0] - Unreleased
+## [1.0.0] - 2026-08-16
 
 ### Added
 
@@ -18,4 +18,4 @@ this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1
 - Shared versioned document-analysis cache and lifecycle cleanup.
 - Unit, corpus, grammar, and Extension Host integration test coverage.
 
-[0.1.0]: https://github.com/ynot3363/power-automate-wdl-expression-tools/releases/tag/v0.1.0
+[1.0.0]: https://github.com/ynot3363/power-automate-wdl-expression-tools/releases/tag/v1.0.0
