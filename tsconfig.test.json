@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "Node16",
+    "noEmit": false,
+    "outDir": "out",
+    "rootDir": ".",
+    "types": [
+      "node",
+      "vscode"
+    ]
+  },
+  "include": [
+    "test/extension/**/*.ts"
+  ]
+}

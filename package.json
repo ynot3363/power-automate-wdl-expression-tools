@@ -1,0 +1,48 @@
+{
+  "name": "power-automate-wdl-expression-tools",
+  "displayName": "Power Automate WDL Expression Tools",
+  "description": "Edit and validate Microsoft Power Automate WDL expressions in Visual Studio Code.",
+  "version": "0.0.1",
+  "publisher": "aepcodes",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ynot3363/power-automate-wdl-expression-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ynot3363/power-automate-wdl-expression-tools/issues"
+  },
+  "engines": {
+    "vscode": "^1.125.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./dist/extension.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "npm run build:extension && npm run build:tests",
+    "build:extension": "esbuild src/extension/extension.ts --bundle --external:vscode --format=cjs --platform=node --target=node20 --outfile=dist/extension.js",
+    "build:tests": "tsc --project tsconfig.test.json",
+    "lint": "eslint .",
+    "test": "npm run test:unit",
+    "test:integration": "npm run build && node out/test/extension/runTest.js",
+    "test:unit": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "validate": "npm run lint && npm run typecheck && npm run test:unit && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.13.3",
+    "@types/vscode": "1.125.0",
+    "@vscode/test-electron": "3.1.0",
+    "esbuild": "0.28.2",
+    "eslint": "10.0.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.67.0",
+    "vitest": "4.1.10"
+  }
+}
