@@ -8,6 +8,20 @@ The project is in early development. The current scaffold establishes the
 strict TypeScript, validation, and Extension Development Host foundations used
 by the numbered implementation stories in GitHub.
 
+## Getting Started
+
+Create a file with the canonical `.wdlexpr` extension. VS Code automatically
+selects the `Power Automate WDL Expression` language mode.
+
+For a temporary scratch document, open the Command Palette and run:
+
+```text
+Power Automate: New WDL Expression
+```
+
+The command opens an untitled editor in the same language mode. The extension
+does not register `.wdl` or `.paexpr` files.
+
 ## Prerequisites
 
 - Node.js 24 or another Node.js version supported by the package toolchain

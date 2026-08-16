@@ -18,6 +18,25 @@
   "categories": [
     "Programming Languages"
   ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "powerAutomateWdlExpressions.newExpression",
+        "title": "Power Automate: New WDL Expression"
+      }
+    ],
+    "languages": [
+      {
+        "id": "power-automate-wdl-expression",
+        "aliases": [
+          "Power Automate WDL Expression"
+        ],
+        "extensions": [
+          ".wdlexpr"
+        ]
+      }
+    ]
+  },
   "main": "./dist/extension.js",
   "files": [
     "dist",
@@ -30,7 +49,7 @@
     "lint": "eslint .",
     "test": "npm run test:unit",
     "test:integration": "npm run build && node out/test/extension/runTest.js",
-    "test:unit": "vitest run",
+    "test:unit": "vitest run test/unit",
     "typecheck": "tsc --noEmit",
     "validate": "npm run lint && npm run typecheck && npm run test:unit && npm run build"
   },

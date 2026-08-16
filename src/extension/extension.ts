@@ -1,6 +1,9 @@
+import type * as vscode from "vscode";
+import { registerNewExpressionCommand } from "./commands/newExpression";
+
 /** Activate the extension integration layer. */
-export function activate(): void {
-  // Providers and commands are registered by their implementation stories.
+export function activate(context: vscode.ExtensionContext): void {
+  context.subscriptions.push(registerNewExpressionCommand());
 }
 
 /** Release extension resources. */
