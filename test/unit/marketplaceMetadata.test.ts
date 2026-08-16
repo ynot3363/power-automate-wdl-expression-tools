@@ -61,7 +61,7 @@ describe("Marketplace metadata", () => {
     expect(readme).toContain("Power Automate: Minify WDL Expression");
     expect(readme).toContain("```wdl");
     const manifest = JSON.parse(readRepositoryFile("package.json")) as MarketplaceManifest;
-    expect(changelog).toContain(`## [${manifest.version}] - Unreleased`);
+    expect(changelog).toContain(`## [${manifest.version}] - 2026-08-16`);
   });
 
   it("uses a square PNG Marketplace icon and records its provenance", () => {

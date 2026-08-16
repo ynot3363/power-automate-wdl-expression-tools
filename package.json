@@ -2,7 +2,7 @@
   "name": "power-automate-wdl-expression-tools",
   "displayName": "Power Automate WDL Expression Tools",
   "description": "Edit and validate Microsoft Power Automate WDL expressions in Visual Studio Code.",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "publisher": "aepcodes",
   "license": "AGPL-3.0-only",
   "icon": "assets/icon.png",

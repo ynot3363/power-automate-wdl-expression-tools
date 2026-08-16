@@ -13,18 +13,18 @@ npm ci
 npm run test:all
 npm run package:vsix
 npm run package:verify
-shasum -a 256 power-automate-wdl-expression-tools-0.1.0.vsix
+shasum -a 256 power-automate-wdl-expression-tools-1.0.0.vsix
 ```
 
 The expected artifact is
-`power-automate-wdl-expression-tools-0.1.0.vsix`. The verifier rejects a
+`power-automate-wdl-expression-tools-1.0.0.vsix`. The verifier rejects a
 different filename, mismatched packaged metadata, or any file outside the
 release allowlist.
 
 Install the candidate in VS Code without publishing it:
 
 ```sh
-code --install-extension ./power-automate-wdl-expression-tools-0.1.0.vsix --force
+code --install-extension ./power-automate-wdl-expression-tools-1.0.0.vsix --force
 ```
 
 Restart VS Code and complete [the full smoke test](smoke-test.md). Keep the
@@ -37,7 +37,7 @@ with the release date. Confirm that `package.json`, the root package in
 `package-lock.json`, and the changelog heading all use the same stable SemVer.
 
 After the smoke test passes and the approved release commit is on `main`, push
-the matching tag, for example `v0.1.0`. The `Release VSIX` workflow then:
+the matching tag, for example `v1.0.0`. The `Release VSIX` workflow then:
 
 1. Rejects a tag, manifest, lockfile, or changelog mismatch.
 2. Runs lint, typecheck, unit tests, build, and headless Extension Host tests.
@@ -81,7 +81,7 @@ After the first manual release:
 4. Download or rebuild-and-verify the exact approved VSIX, then run:
 
    ```sh
-   npx vsce publish --packagePath power-automate-wdl-expression-tools-0.1.0.vsix --oidc
+   npx vsce publish --packagePath power-automate-wdl-expression-tools-1.0.0.vsix --oidc
    ```
 
 5. Keep version/tag checks and every validation gate ahead of the publish step.

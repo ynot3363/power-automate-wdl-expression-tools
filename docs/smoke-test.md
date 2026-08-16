@@ -11,14 +11,14 @@ npm ci
 npm run test:all
 npm run package:vsix
 npm run package:verify
-code --install-extension ./power-automate-wdl-expression-tools-0.1.0.vsix --force
+code --install-extension ./power-automate-wdl-expression-tools-1.0.0.vsix --force
 ```
 
 - Confirm all automated checks pass.
 - Confirm the VSIX name is exactly
-  `power-automate-wdl-expression-tools-0.1.0.vsix`.
+  `power-automate-wdl-expression-tools-1.0.0.vsix`.
 - Restart VS Code and confirm **Power Automate WDL Expression Tools** version
-  `0.1.0` appears in the installed extensions list with its icon, README,
+  `1.0.0` appears in the installed extensions list with its icon, README,
   changelog, repository, and AGPL-3.0 license.
 
 ## 2. Language registration and editor behavior
