@@ -21,6 +21,12 @@ export { visitExpression } from "./ast/visitors";
 export type { Token } from "./lexer/token";
 export { TokenType } from "./lexer/tokenType";
 export { WdlLexer } from "./lexer/wdlLexer";
+export type { FormatterOptions } from "./formatter/formatterOptions";
+export {
+  defaultFormatterOptions,
+  resolveFormatterOptions,
+} from "./formatter/formatterOptions";
+export { WdlFormatter } from "./formatter/wdlFormatter";
 export type { ParseResult } from "./parser/parseResult";
 export type {
   WdlParserDiagnostic,

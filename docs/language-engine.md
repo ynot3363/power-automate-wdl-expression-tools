@@ -73,3 +73,14 @@ Inspect the representative AST during development with:
 npm run inspect:ast
 npm run inspect:ast -- --expression "concat('Hello', 'World')"
 ```
+
+## Formatter
+
+`WdlFormatter` traverses only AST nodes. It uses four spaces by default and
+supports a positive `indentSize` plus `useTabs`. Nested function calls expand
+onto indented argument lines; simple literal-only calls remain compact.
+
+`format()` and `minify()` preserve literal lexemes and return `undefined` when
+missing delimiters, missing expressions, or unknown nodes make a semantic
+rewrite unsafe. Callers must treat that result as “no edit,” not as empty text.
+Complex line-width wrapping is intentionally outside V1.
