@@ -52,7 +52,8 @@ Run **Power Automate: Minify WDL Expression** to return to a compact form.
   delimiters
 - Document and safe-selection formatting driven by the parsed expression tree
 - AST-aware minification that preserves WDL string escaping
-- Hover documentation for 20 commonly used expression functions
+- Hover documentation for all 137 functions in Microsoft's workflow expression
+  function reference
 - Function completion with snippet tab stops
 - Signature help that follows nested and incomplete calls
 - Problems-panel diagnostics for syntax, unknown functions, argument counts,
@@ -109,8 +110,8 @@ producing speculative errors.
   flow-definition editor.
 - The extension does not connect to Power Platform, inspect a flow, or discover
   action, variable, trigger, or connector schemas.
-- The bundled V1 catalog covers 20 commonly used functions, not every function
-  available in every Power Automate or Logic Apps environment.
+- The bundled catalog follows Microsoft's workflow expression function reference;
+  availability can still vary by Power Automate or Logic Apps environment.
 - No `.wdl` file association is registered, to avoid claiming unrelated WDL
   formats.
 - Diagnostics are static editor guidance, not a substitute for validating and

@@ -1,39 +1,42 @@
 import { describe, expect, it } from "vitest";
 import {
   initialFunctionDefinitions,
+  microsoftFunctionReferenceNames,
   validateWdlFunctionDefinitions,
   wdlFunctionCatalog,
   wdlFunctionCategories,
 } from "../../../../src/language";
-
-const requiredInitialFunctions = [
-  "if",
-  "concat",
-  "substring",
-  "variables",
-  "outputs",
-  "body",
-  "triggerBody",
-  "items",
-  "coalesce",
-  "equals",
-  "empty",
-  "trim",
-  "toLower",
-  "toUpper",
-  "sub",
-  "subtractFromTime",
-] as const;
 
 describe("initialFunctionDefinitions", () => {
   it("passes runtime validation as a complete dataset", () => {
     expect(validateWdlFunctionDefinitions(initialFunctionDefinitions)).toEqual([]);
   });
 
-  it("contains every function required by the initial scope", () => {
-    for (const name of requiredInitialFunctions) {
-      expect(wdlFunctionCatalog.get(name), name).toBeDefined();
-    }
+  it("exactly covers Microsoft's documented workflow function names", () => {
+    expect(microsoftFunctionReferenceNames).toHaveLength(137);
+    expect(wdlFunctionCatalog.list().map(({ name }) => name)).toEqual(
+      [...microsoftFunctionReferenceNames].sort((left, right) =>
+        left.localeCompare(right, "en-US", { sensitivity: "base" }),
+      ),
+    );
+  });
+
+  it("models addProperty as a three-argument object function", () => {
+    expect(wdlFunctionCatalog.get("addProperty")).toMatchObject({
+      category: "JSON/XML",
+      documentationUrl:
+        "https://learn.microsoft.com/en-us/azure/logic-apps/expression-functions-reference#addProperty",
+      signatures: [
+        {
+          parameters: [
+            { name: "object", types: ["object"], required: true },
+            { name: "property", types: ["string"], required: true },
+            { name: "value", types: ["any"], required: true },
+          ],
+          returnType: "object",
+        },
+      ],
+    });
   });
 
   it("represents every planned category", () => {

@@ -12,6 +12,12 @@ describe("WdlAnalyzer", () => {
     ).toEqual([]);
   });
 
+  it("recognizes addProperty and its nested JSON input", () => {
+    expect(
+      diagnostics("addProperty(json('{}'), 'name', 'Ada')"),
+    ).toEqual([]);
+  });
+
   it("reports unknown functions on their name range", () => {
     expect(diagnostics("mystery('value')")).toEqual([
       {

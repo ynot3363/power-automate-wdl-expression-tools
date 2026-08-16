@@ -54,6 +54,7 @@ export { WdlAnalyzer } from "./analyzer/wdlAnalyzer";
 export { WdlFunctionCatalog } from "./functions/catalog";
 export { wdlFunctionCatalog } from "./functions/defaultCatalog";
 export { initialFunctionDefinitions } from "./functions/initialFunctionDefinitions";
+export { microsoftFunctionReferenceNames } from "./functions/microsoftFunctionDefinitions";
 export {
   loadWdlFunctionDefinitions,
   validateWdlFunctionDefinitions,
