@@ -48,3 +48,28 @@ Missing expressions use a zero-width range at the insertion point. Missing
 closing delimiters also retain zero-width delimiter ranges and set `isClosed`
 to `false`. Consumers can therefore use partial function and access nodes while
 also deciding whether a transformation is safe.
+
+## Expression Corpus
+
+Real-world complete, nested, access-chain, numeric/string, invalid, and
+incomplete examples live under `test/fixtures/expressions/sources`. The matching
+`parser-golden.json` records lexer tokens, AST output, source ranges, and parser
+diagnostics.
+
+Run the corpus through the normal unit suite. After an intentional parser or
+lexer contract change, regenerate and review the golden diff explicitly:
+
+```sh
+npm run corpus:update
+npm run test:unit
+```
+
+Every parser regression must add or extend a focused source fixture before the
+fix. Do not update goldens merely to make an unexplained failure disappear.
+
+Inspect the representative AST during development with:
+
+```sh
+npm run inspect:ast
+npm run inspect:ast -- --expression "concat('Hello', 'World')"
+```
