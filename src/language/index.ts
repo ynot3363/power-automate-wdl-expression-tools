@@ -37,6 +37,13 @@ export {
   inferWdlType,
   parameterAt,
 } from "./analyzer/typeInference";
+export type {
+  WdlDiagnostic,
+  WdlSemanticDiagnostic,
+  WdlSemanticDiagnosticCode,
+} from "./analyzer/analyzerDiagnostic";
+export type { WdlAnalysisResult } from "./analyzer/wdlAnalyzer";
+export { WdlAnalyzer } from "./analyzer/wdlAnalyzer";
 export { WdlFunctionCatalog } from "./functions/catalog";
 export { wdlFunctionCatalog } from "./functions/defaultCatalog";
 export { initialFunctionDefinitions } from "./functions/initialFunctionDefinitions";

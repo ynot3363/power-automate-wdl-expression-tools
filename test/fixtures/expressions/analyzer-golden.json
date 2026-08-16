@@ -1,0 +1,177 @@
+{
+  "complex.wdlexpr": {
+    "source": "if(\n    equals(\n        toLower(\n            trim(\n                coalesce(\n                    outputs('Get_User')?['body/Email'],\n                    ''\n                )\n            )\n        ),\n        'test@contoso.com'\n    ),\n    concat(\n        'Hello ',\n        outputs('Get_User')?['body/DisplayName']\n    ),\n    'Unknown'\n)\n",
+    "diagnostics": []
+  },
+  "empty-call.wdlexpr": {
+    "source": "triggerBody()\n",
+    "diagnostics": []
+  },
+  "escaped-and-numeric.wdlexpr": {
+    "source": "if(equals(-42, 3.14), 'It''s working', '')\n",
+    "diagnostics": []
+  },
+  "incomplete-concat.wdlexpr": {
+    "source": "concat(\n",
+    "diagnostics": [
+      {
+        "code": "WDL1001",
+        "message": "Expected argument.",
+        "severity": "error",
+        "range": {
+          "start": 8,
+          "end": 8
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ')' to close the function call.",
+        "severity": "error",
+        "range": {
+          "start": 8,
+          "end": 8
+        }
+      }
+    ]
+  },
+  "incomplete-if.wdlexpr": {
+    "source": "if(equals(\n",
+    "diagnostics": [
+      {
+        "code": "WDL1001",
+        "message": "Expected argument.",
+        "severity": "error",
+        "range": {
+          "start": 11,
+          "end": 11
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ')' to close the function call.",
+        "severity": "error",
+        "range": {
+          "start": 11,
+          "end": 11
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ')' to close the function call.",
+        "severity": "error",
+        "range": {
+          "start": 11,
+          "end": 11
+        }
+      },
+      {
+        "code": "WDL1201",
+        "message": "if does not accept 1 argument. Expected 3.",
+        "severity": "error",
+        "range": {
+          "start": 0,
+          "end": 11
+        }
+      }
+    ]
+  },
+  "incomplete-safe-index.wdlexpr": {
+    "source": "outputs('Get_User')?[\n",
+    "diagnostics": [
+      {
+        "code": "WDL1001",
+        "message": "Expected expression.",
+        "severity": "error",
+        "range": {
+          "start": 22,
+          "end": 22
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ']' to close the index access.",
+        "severity": "error",
+        "range": {
+          "start": 22,
+          "end": 22
+        }
+      }
+    ]
+  },
+  "incomplete-substring.wdlexpr": {
+    "source": "substring('Hello',\n",
+    "diagnostics": [
+      {
+        "code": "WDL1001",
+        "message": "Expected argument.",
+        "severity": "error",
+        "range": {
+          "start": 19,
+          "end": 19
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ')' to close the function call.",
+        "severity": "error",
+        "range": {
+          "start": 19,
+          "end": 19
+        }
+      }
+    ]
+  },
+  "invalid-recovery.wdlexpr": {
+    "source": "concat($, toLower(, 'x') trailing\n",
+    "diagnostics": [
+      {
+        "code": "WDL1003",
+        "message": "Unexpected input \"$\".",
+        "severity": "error",
+        "range": {
+          "start": 7,
+          "end": 8
+        }
+      },
+      {
+        "code": "WDL1001",
+        "message": "Expected expression.",
+        "severity": "error",
+        "range": {
+          "start": 18,
+          "end": 18
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ',' or ')' after the function argument.",
+        "severity": "error",
+        "range": {
+          "start": 25,
+          "end": 33
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ')' to close the function call.",
+        "severity": "error",
+        "range": {
+          "start": 34,
+          "end": 34
+        }
+      }
+    ]
+  },
+  "nested.wdlexpr": {
+    "source": "if(\n    empty(variables('Name')),\n    'Unknown',\n    trim(variables('Name'))\n)\n",
+    "diagnostics": []
+  },
+  "property-access.wdlexpr": {
+    "source": "outputs('Get_User')?['body/Email']\n",
+    "diagnostics": []
+  },
+  "simple.wdlexpr": {
+    "source": "concat('Hello ', 'World')\n",
+    "diagnostics": []
+  }
+}
