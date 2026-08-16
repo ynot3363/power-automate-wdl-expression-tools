@@ -27,6 +27,23 @@ export {
   resolveFormatterOptions,
 } from "./formatter/formatterOptions";
 export { WdlFormatter } from "./formatter/wdlFormatter";
+export type { WdlType } from "./analyzer/wdlTypes";
+export { isWdlType, wdlTypes } from "./analyzer/wdlTypes";
+export { WdlFunctionCatalog } from "./functions/catalog";
+export {
+  loadWdlFunctionDefinitions,
+  validateWdlFunctionDefinitions,
+  WdlCatalogValidationError,
+  type WdlCatalogValidationIssue,
+} from "./functions/catalogValidation";
+export {
+  wdlFunctionCategories,
+  type WdlFunctionCategory,
+  type WdlFunctionDefinition,
+  type WdlFunctionExample,
+  type WdlFunctionParameter,
+  type WdlFunctionSignature,
+} from "./functions/functionDefinition";
 export type { ParseResult } from "./parser/parseResult";
 export type {
   WdlParserDiagnostic,
