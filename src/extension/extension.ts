@@ -10,6 +10,7 @@ import {
 import { WdlHoverProvider } from "./providers/hoverProvider";
 import { WdlSignatureHelpProvider } from "./providers/signatureHelpProvider";
 import { DocumentAnalysisService } from "./services/documentAnalysisService";
+import { registerDocumentAnalysisLifecycle } from "./services/documentAnalysisLifecycle";
 
 const wdlDocumentSelector: vscode.DocumentSelector = {
   language: "power-automate-wdl-expression",
@@ -19,6 +20,8 @@ const wdlDocumentSelector: vscode.DocumentSelector = {
 export function activate(context: vscode.ExtensionContext): void {
   const analysis = new DocumentAnalysisService();
   context.subscriptions.push(
+    analysis,
+    registerDocumentAnalysisLifecycle(analysis),
     registerNewExpressionCommand(),
     ...registerExpressionTransformCommands(analysis),
     vscode.languages.registerDocumentFormattingEditProvider(
