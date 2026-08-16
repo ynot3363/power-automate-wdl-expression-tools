@@ -33,3 +33,18 @@ editor features.
 Zero-width ranges identify insertion points for recovered missing expressions.
 `isClosed` distinguishes a complete call, index, or parenthesized expression
 from a useful partial node produced while an author is still typing.
+
+## Parse Results and Recovery
+
+`WdlParser.parse()` returns one root expression, the lexer tokens, and parser
+diagnostics as separate data. Normal invalid or incomplete editor input does
+not throw. The parser uses:
+
+- `WDL1001` for a missing expression or argument;
+- `WDL1002` for a missing delimiter or required syntactic continuation; and
+- `WDL1003` for unexpected input.
+
+Missing expressions use a zero-width range at the insertion point. Missing
+closing delimiters also retain zero-width delimiter ranges and set `isClosed`
+to `false`. Consumers can therefore use partial function and access nodes while
+also deciding whether a transformation is safe.

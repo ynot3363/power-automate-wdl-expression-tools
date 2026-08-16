@@ -44,7 +44,7 @@ export interface IdentifierNode extends BaseExpressionNode {
 export interface PropertyAccessNode extends BaseExpressionNode {
   readonly type: "PropertyAccess";
   readonly target: ExpressionNode;
-  readonly property: IdentifierNode;
+  readonly property: IdentifierNode | MissingExpressionNode;
   readonly operatorRange: SourceRange;
   readonly isSafe: boolean;
 }

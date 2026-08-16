@@ -21,3 +21,9 @@ export { visitExpression } from "./ast/visitors";
 export type { Token } from "./lexer/token";
 export { TokenType } from "./lexer/tokenType";
 export { WdlLexer } from "./lexer/wdlLexer";
+export type { ParseResult } from "./parser/parseResult";
+export type {
+  WdlParserDiagnostic,
+  WdlParserDiagnosticCode,
+} from "./parser/parserError";
+export { WdlParser } from "./parser/wdlParser";
