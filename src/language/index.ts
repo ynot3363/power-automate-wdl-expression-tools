@@ -29,6 +29,14 @@ export {
 export { WdlFormatter } from "./formatter/wdlFormatter";
 export type { WdlType } from "./analyzer/wdlTypes";
 export { isWdlType, wdlTypes } from "./analyzer/wdlTypes";
+export type { WdlTypeInference } from "./analyzer/typeInference";
+export {
+  acceptsArgumentCount,
+  areWdlTypesCompatible,
+  getApplicableSignatures,
+  inferWdlType,
+  parameterAt,
+} from "./analyzer/typeInference";
 export { WdlFunctionCatalog } from "./functions/catalog";
 export { wdlFunctionCatalog } from "./functions/defaultCatalog";
 export { initialFunctionDefinitions } from "./functions/initialFunctionDefinitions";
