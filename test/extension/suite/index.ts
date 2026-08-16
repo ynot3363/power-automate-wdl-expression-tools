@@ -83,6 +83,7 @@ export async function run(): Promise<void> {
 
     await verifyFormatting();
     await verifyHover();
+    await verifySignatureHelp();
   } finally {
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
     await rm(fixtureDirectory, { force: true, recursive: true });
@@ -278,4 +279,106 @@ function hoverMarkdown(hover: vscode.Hover | undefined): string {
           : "",
     )
     .join("\n");
+}
+
+async function verifySignatureHelp(): Promise<void> {
+  const firstDocument = await openExpression("concat(");
+  const first = await executeSignatureHelp(
+    firstDocument,
+    firstDocument.positionAt(firstDocument.getText().length),
+  );
+  ok(first, "A known incomplete call should provide signature help.");
+  ok(first.signatures[0]?.label.startsWith("concat("));
+  equal(first.activeParameter, 0, "The first argument should be active after '('.");
+  ok(
+    signatureParameterDocumentation(first.signatures[0]?.parameters[0]).includes(
+      "first",
+    ),
+    "Signature help should include parameter documentation.",
+  );
+
+  const middleDocument = await openExpression("if(true, 'yes', 'no')");
+  const middle = await executeSignatureHelp(
+    middleDocument,
+    middleDocument.positionAt(middleDocument.getText().indexOf("'yes'")),
+  );
+  equal(middle?.activeParameter, 1, "The middle argument should be active.");
+
+  const nestedDocument = await openExpression("if(equals(1, ");
+  const nested = await executeSignatureHelp(
+    nestedDocument,
+    nestedDocument.positionAt(nestedDocument.getText().length),
+  );
+  ok(nested, "The incomplete nested call should provide signature help.");
+  ok(
+    nested.signatures[0]?.label.startsWith("equals("),
+    "An inner cursor should report equals rather than its enclosing if call.",
+  );
+  equal(nested.activeParameter, 1, "The second equals argument should be active.");
+
+  const optionalDocument = await openExpression(
+    "substring(\n  'abc',\n  1,\n  )",
+  );
+  const optional = await executeSignatureHelp(
+    optionalDocument,
+    optionalDocument.positionAt(optionalDocument.getText().lastIndexOf(")")),
+  );
+  equal(optional?.activeParameter, 2, "The optional length argument should be active.");
+
+  const overloadedDocument = await openExpression("first('abc')");
+  const overloaded = await executeSignatureHelp(
+    overloadedDocument,
+    overloadedDocument.positionAt(overloadedDocument.getText().indexOf("abc")),
+  );
+  equal(overloaded?.signatures.length, 1, "A known literal should narrow overloads.");
+  ok(overloaded.signatures[0]?.label.includes("collection: string"));
+
+  const variadicDocument = await openExpression("concat('a', 'b', 'c')");
+  const variadic = await executeSignatureHelp(
+    variadicDocument,
+    variadicDocument.positionAt(variadicDocument.getText().indexOf("'c'")),
+  );
+  equal(
+    variadic?.activeParameter,
+    1,
+    "Variadic arguments should stay on the final declared parameter.",
+  );
+
+  const unknownDocument = await openExpression("mystery(");
+  equal(
+    await executeSignatureHelp(
+      unknownDocument,
+      unknownDocument.positionAt(unknownDocument.getText().length),
+    ),
+    undefined,
+    "Unknown calls should not provide signature help.",
+  );
+
+  const outsideDocument = await openExpression("concat('a', 'b')");
+  equal(
+    await executeSignatureHelp(outsideDocument, new vscode.Position(0, 1)),
+    undefined,
+    "Positions outside a call's arguments should not provide signature help.",
+  );
+}
+
+async function executeSignatureHelp(
+  document: vscode.TextDocument,
+  position: vscode.Position,
+): Promise<vscode.SignatureHelp | undefined> {
+  return vscode.commands.executeCommand<vscode.SignatureHelp | undefined>(
+    "vscode.executeSignatureHelpProvider",
+    document.uri,
+    position,
+  );
+}
+
+function signatureParameterDocumentation(
+  parameter: vscode.ParameterInformation | undefined,
+): string {
+  const documentation = parameter?.documentation;
+  if (documentation === undefined) {
+    return "";
+  }
+  return typeof documentation === "string" ? documentation : documentation.value;
 }

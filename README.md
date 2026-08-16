@@ -50,6 +50,10 @@ parameters, return types, examples, and a link to the Microsoft reference. The
 catalog is stored with the extension and does not fetch remote documentation or
 know the actions, variables, or schemas in a particular flow.
 
+Signature help opens after `(` and `,` and tracks the active argument for known
+functions, including nested and incomplete calls. Signatures describe catalog
+types only; they cannot suggest values from a particular flow or connector.
+
 ## Prerequisites
 
 - Node.js 24 or another Node.js version supported by the package toolchain

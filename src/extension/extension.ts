@@ -5,6 +5,7 @@ import {
   WdlDocumentRangeFormattingProvider,
 } from "./providers/formattingProviders";
 import { WdlHoverProvider } from "./providers/hoverProvider";
+import { WdlSignatureHelpProvider } from "./providers/signatureHelpProvider";
 import { DocumentAnalysisService } from "./services/documentAnalysisService";
 
 const wdlDocumentSelector: vscode.DocumentSelector = {
@@ -27,6 +28,12 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.languages.registerHoverProvider(
       wdlDocumentSelector,
       new WdlHoverProvider(analysis),
+    ),
+    vscode.languages.registerSignatureHelpProvider(
+      wdlDocumentSelector,
+      new WdlSignatureHelpProvider(analysis),
+      "(",
+      ",",
     ),
   );
 }
