@@ -32,6 +32,17 @@ numbers, boolean and null literals, delimiters, and property/index access.
 Function names are highlighted syntactically. Catalog-backed function validity
 and semantic analysis are delivered by later implementation stories.
 
+### Formatting
+
+Use VS Code's **Format Document** command to format a complete expression, or
+select one complete expression and run **Format Selection**. Unsafe partial or
+incomplete selections are left unchanged.
+
+Formatting uses four spaces by default. Configure
+`powerAutomateWdlExpressions.format.indentSize` to change the indentation width
+or set `powerAutomateWdlExpressions.format.useTabs` to `true` to indent with
+tabs. Both settings can be scoped to a workspace, folder, or language.
+
 ## Prerequisites
 
 - Node.js 24 or another Node.js version supported by the package toolchain
