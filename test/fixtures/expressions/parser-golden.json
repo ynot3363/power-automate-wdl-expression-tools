@@ -1,0 +1,1990 @@
+{
+  "complex.wdlexpr": {
+    "source": "if(\n    equals(\n        toLower(\n            trim(\n                coalesce(\n                    outputs('Get_User')?['body/Email'],\n                    ''\n                )\n            )\n        ),\n        'test@contoso.com'\n    ),\n    concat(\n        'Hello ',\n        outputs('Get_User')?['body/DisplayName']\n    ),\n    'Unknown'\n)\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "if",
+        "lexeme": "if",
+        "start": 0,
+        "end": 2
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 2,
+        "end": 3
+      },
+      {
+        "type": "Identifier",
+        "value": "equals",
+        "lexeme": "equals",
+        "start": 8,
+        "end": 14
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 14,
+        "end": 15
+      },
+      {
+        "type": "Identifier",
+        "value": "toLower",
+        "lexeme": "toLower",
+        "start": 24,
+        "end": 31
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 31,
+        "end": 32
+      },
+      {
+        "type": "Identifier",
+        "value": "trim",
+        "lexeme": "trim",
+        "start": 45,
+        "end": 49
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 49,
+        "end": 50
+      },
+      {
+        "type": "Identifier",
+        "value": "coalesce",
+        "lexeme": "coalesce",
+        "start": 67,
+        "end": 75
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 75,
+        "end": 76
+      },
+      {
+        "type": "Identifier",
+        "value": "outputs",
+        "lexeme": "outputs",
+        "start": 97,
+        "end": 104
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 104,
+        "end": 105
+      },
+      {
+        "type": "StringLiteral",
+        "value": "Get_User",
+        "lexeme": "'Get_User'",
+        "start": 105,
+        "end": 115
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 115,
+        "end": 116
+      },
+      {
+        "type": "QuestionMark",
+        "value": "?",
+        "lexeme": "?",
+        "start": 116,
+        "end": 117
+      },
+      {
+        "type": "OpenBracket",
+        "value": "[",
+        "lexeme": "[",
+        "start": 117,
+        "end": 118
+      },
+      {
+        "type": "StringLiteral",
+        "value": "body/Email",
+        "lexeme": "'body/Email'",
+        "start": 118,
+        "end": 130
+      },
+      {
+        "type": "CloseBracket",
+        "value": "]",
+        "lexeme": "]",
+        "start": 130,
+        "end": 131
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 131,
+        "end": 132
+      },
+      {
+        "type": "StringLiteral",
+        "value": "",
+        "lexeme": "''",
+        "start": 153,
+        "end": 155
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 172,
+        "end": 173
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 186,
+        "end": 187
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 196,
+        "end": 197
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 197,
+        "end": 198
+      },
+      {
+        "type": "StringLiteral",
+        "value": "test@contoso.com",
+        "lexeme": "'test@contoso.com'",
+        "start": 207,
+        "end": 225
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 230,
+        "end": 231
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 231,
+        "end": 232
+      },
+      {
+        "type": "Identifier",
+        "value": "concat",
+        "lexeme": "concat",
+        "start": 237,
+        "end": 243
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 243,
+        "end": 244
+      },
+      {
+        "type": "StringLiteral",
+        "value": "Hello ",
+        "lexeme": "'Hello '",
+        "start": 253,
+        "end": 261
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 261,
+        "end": 262
+      },
+      {
+        "type": "Identifier",
+        "value": "outputs",
+        "lexeme": "outputs",
+        "start": 271,
+        "end": 278
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 278,
+        "end": 279
+      },
+      {
+        "type": "StringLiteral",
+        "value": "Get_User",
+        "lexeme": "'Get_User'",
+        "start": 279,
+        "end": 289
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 289,
+        "end": 290
+      },
+      {
+        "type": "QuestionMark",
+        "value": "?",
+        "lexeme": "?",
+        "start": 290,
+        "end": 291
+      },
+      {
+        "type": "OpenBracket",
+        "value": "[",
+        "lexeme": "[",
+        "start": 291,
+        "end": 292
+      },
+      {
+        "type": "StringLiteral",
+        "value": "body/DisplayName",
+        "lexeme": "'body/DisplayName'",
+        "start": 292,
+        "end": 310
+      },
+      {
+        "type": "CloseBracket",
+        "value": "]",
+        "lexeme": "]",
+        "start": 310,
+        "end": 311
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 316,
+        "end": 317
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 317,
+        "end": 318
+      },
+      {
+        "type": "StringLiteral",
+        "value": "Unknown",
+        "lexeme": "'Unknown'",
+        "start": 323,
+        "end": 332
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 333,
+        "end": 334
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 335,
+        "end": 335
+      }
+    ],
+    "ast": {
+      "type": "FunctionCall",
+      "name": "if",
+      "arguments": [
+        {
+          "type": "FunctionCall",
+          "name": "equals",
+          "arguments": [
+            {
+              "type": "FunctionCall",
+              "name": "toLower",
+              "arguments": [
+                {
+                  "type": "FunctionCall",
+                  "name": "trim",
+                  "arguments": [
+                    {
+                      "type": "FunctionCall",
+                      "name": "coalesce",
+                      "arguments": [
+                        {
+                          "type": "IndexAccess",
+                          "target": {
+                            "type": "FunctionCall",
+                            "name": "outputs",
+                            "arguments": [
+                              {
+                                "type": "StringLiteral",
+                                "value": "Get_User",
+                                "raw": "'Get_User'",
+                                "range": {
+                                  "start": 105,
+                                  "end": 115
+                                }
+                              }
+                            ],
+                            "nameRange": {
+                              "start": 97,
+                              "end": 104
+                            },
+                            "openParenRange": {
+                              "start": 104,
+                              "end": 105
+                            },
+                            "closeParenRange": {
+                              "start": 115,
+                              "end": 116
+                            },
+                            "isClosed": true,
+                            "range": {
+                              "start": 97,
+                              "end": 116
+                            }
+                          },
+                          "index": {
+                            "type": "StringLiteral",
+                            "value": "body/Email",
+                            "raw": "'body/Email'",
+                            "range": {
+                              "start": 118,
+                              "end": 130
+                            }
+                          },
+                          "operatorRange": {
+                            "start": 116,
+                            "end": 118
+                          },
+                          "closeBracketRange": {
+                            "start": 130,
+                            "end": 131
+                          },
+                          "isSafe": true,
+                          "isClosed": true,
+                          "range": {
+                            "start": 97,
+                            "end": 131
+                          }
+                        },
+                        {
+                          "type": "StringLiteral",
+                          "value": "",
+                          "raw": "''",
+                          "range": {
+                            "start": 153,
+                            "end": 155
+                          }
+                        }
+                      ],
+                      "nameRange": {
+                        "start": 67,
+                        "end": 75
+                      },
+                      "openParenRange": {
+                        "start": 75,
+                        "end": 76
+                      },
+                      "closeParenRange": {
+                        "start": 172,
+                        "end": 173
+                      },
+                      "isClosed": true,
+                      "range": {
+                        "start": 67,
+                        "end": 173
+                      }
+                    }
+                  ],
+                  "nameRange": {
+                    "start": 45,
+                    "end": 49
+                  },
+                  "openParenRange": {
+                    "start": 49,
+                    "end": 50
+                  },
+                  "closeParenRange": {
+                    "start": 186,
+                    "end": 187
+                  },
+                  "isClosed": true,
+                  "range": {
+                    "start": 45,
+                    "end": 187
+                  }
+                }
+              ],
+              "nameRange": {
+                "start": 24,
+                "end": 31
+              },
+              "openParenRange": {
+                "start": 31,
+                "end": 32
+              },
+              "closeParenRange": {
+                "start": 196,
+                "end": 197
+              },
+              "isClosed": true,
+              "range": {
+                "start": 24,
+                "end": 197
+              }
+            },
+            {
+              "type": "StringLiteral",
+              "value": "test@contoso.com",
+              "raw": "'test@contoso.com'",
+              "range": {
+                "start": 207,
+                "end": 225
+              }
+            }
+          ],
+          "nameRange": {
+            "start": 8,
+            "end": 14
+          },
+          "openParenRange": {
+            "start": 14,
+            "end": 15
+          },
+          "closeParenRange": {
+            "start": 230,
+            "end": 231
+          },
+          "isClosed": true,
+          "range": {
+            "start": 8,
+            "end": 231
+          }
+        },
+        {
+          "type": "FunctionCall",
+          "name": "concat",
+          "arguments": [
+            {
+              "type": "StringLiteral",
+              "value": "Hello ",
+              "raw": "'Hello '",
+              "range": {
+                "start": 253,
+                "end": 261
+              }
+            },
+            {
+              "type": "IndexAccess",
+              "target": {
+                "type": "FunctionCall",
+                "name": "outputs",
+                "arguments": [
+                  {
+                    "type": "StringLiteral",
+                    "value": "Get_User",
+                    "raw": "'Get_User'",
+                    "range": {
+                      "start": 279,
+                      "end": 289
+                    }
+                  }
+                ],
+                "nameRange": {
+                  "start": 271,
+                  "end": 278
+                },
+                "openParenRange": {
+                  "start": 278,
+                  "end": 279
+                },
+                "closeParenRange": {
+                  "start": 289,
+                  "end": 290
+                },
+                "isClosed": true,
+                "range": {
+                  "start": 271,
+                  "end": 290
+                }
+              },
+              "index": {
+                "type": "StringLiteral",
+                "value": "body/DisplayName",
+                "raw": "'body/DisplayName'",
+                "range": {
+                  "start": 292,
+                  "end": 310
+                }
+              },
+              "operatorRange": {
+                "start": 290,
+                "end": 292
+              },
+              "closeBracketRange": {
+                "start": 310,
+                "end": 311
+              },
+              "isSafe": true,
+              "isClosed": true,
+              "range": {
+                "start": 271,
+                "end": 311
+              }
+            }
+          ],
+          "nameRange": {
+            "start": 237,
+            "end": 243
+          },
+          "openParenRange": {
+            "start": 243,
+            "end": 244
+          },
+          "closeParenRange": {
+            "start": 316,
+            "end": 317
+          },
+          "isClosed": true,
+          "range": {
+            "start": 237,
+            "end": 317
+          }
+        },
+        {
+          "type": "StringLiteral",
+          "value": "Unknown",
+          "raw": "'Unknown'",
+          "range": {
+            "start": 323,
+            "end": 332
+          }
+        }
+      ],
+      "nameRange": {
+        "start": 0,
+        "end": 2
+      },
+      "openParenRange": {
+        "start": 2,
+        "end": 3
+      },
+      "closeParenRange": {
+        "start": 333,
+        "end": 334
+      },
+      "isClosed": true,
+      "range": {
+        "start": 0,
+        "end": 334
+      }
+    },
+    "diagnostics": []
+  },
+  "empty-call.wdlexpr": {
+    "source": "triggerBody()\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "triggerBody",
+        "lexeme": "triggerBody",
+        "start": 0,
+        "end": 11
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 11,
+        "end": 12
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 12,
+        "end": 13
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 14,
+        "end": 14
+      }
+    ],
+    "ast": {
+      "type": "FunctionCall",
+      "name": "triggerBody",
+      "arguments": [],
+      "nameRange": {
+        "start": 0,
+        "end": 11
+      },
+      "openParenRange": {
+        "start": 11,
+        "end": 12
+      },
+      "closeParenRange": {
+        "start": 12,
+        "end": 13
+      },
+      "isClosed": true,
+      "range": {
+        "start": 0,
+        "end": 13
+      }
+    },
+    "diagnostics": []
+  },
+  "escaped-and-numeric.wdlexpr": {
+    "source": "if(equals(-42, 3.14), 'It''s working', '')\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "if",
+        "lexeme": "if",
+        "start": 0,
+        "end": 2
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 2,
+        "end": 3
+      },
+      {
+        "type": "Identifier",
+        "value": "equals",
+        "lexeme": "equals",
+        "start": 3,
+        "end": 9
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 9,
+        "end": 10
+      },
+      {
+        "type": "IntegerLiteral",
+        "value": "-42",
+        "lexeme": "-42",
+        "start": 10,
+        "end": 13
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 13,
+        "end": 14
+      },
+      {
+        "type": "FloatLiteral",
+        "value": "3.14",
+        "lexeme": "3.14",
+        "start": 15,
+        "end": 19
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 19,
+        "end": 20
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 20,
+        "end": 21
+      },
+      {
+        "type": "StringLiteral",
+        "value": "It's working",
+        "lexeme": "'It''s working'",
+        "start": 22,
+        "end": 37
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 37,
+        "end": 38
+      },
+      {
+        "type": "StringLiteral",
+        "value": "",
+        "lexeme": "''",
+        "start": 39,
+        "end": 41
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 41,
+        "end": 42
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 43,
+        "end": 43
+      }
+    ],
+    "ast": {
+      "type": "FunctionCall",
+      "name": "if",
+      "arguments": [
+        {
+          "type": "FunctionCall",
+          "name": "equals",
+          "arguments": [
+            {
+              "type": "NumberLiteral",
+              "value": -42,
+              "raw": "-42",
+              "numberKind": "integer",
+              "range": {
+                "start": 10,
+                "end": 13
+              }
+            },
+            {
+              "type": "NumberLiteral",
+              "value": 3.14,
+              "raw": "3.14",
+              "numberKind": "float",
+              "range": {
+                "start": 15,
+                "end": 19
+              }
+            }
+          ],
+          "nameRange": {
+            "start": 3,
+            "end": 9
+          },
+          "openParenRange": {
+            "start": 9,
+            "end": 10
+          },
+          "closeParenRange": {
+            "start": 19,
+            "end": 20
+          },
+          "isClosed": true,
+          "range": {
+            "start": 3,
+            "end": 20
+          }
+        },
+        {
+          "type": "StringLiteral",
+          "value": "It's working",
+          "raw": "'It''s working'",
+          "range": {
+            "start": 22,
+            "end": 37
+          }
+        },
+        {
+          "type": "StringLiteral",
+          "value": "",
+          "raw": "''",
+          "range": {
+            "start": 39,
+            "end": 41
+          }
+        }
+      ],
+      "nameRange": {
+        "start": 0,
+        "end": 2
+      },
+      "openParenRange": {
+        "start": 2,
+        "end": 3
+      },
+      "closeParenRange": {
+        "start": 41,
+        "end": 42
+      },
+      "isClosed": true,
+      "range": {
+        "start": 0,
+        "end": 42
+      }
+    },
+    "diagnostics": []
+  },
+  "incomplete-concat.wdlexpr": {
+    "source": "concat(\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "concat",
+        "lexeme": "concat",
+        "start": 0,
+        "end": 6
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 6,
+        "end": 7
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 8,
+        "end": 8
+      }
+    ],
+    "ast": {
+      "type": "FunctionCall",
+      "name": "concat",
+      "arguments": [
+        {
+          "type": "MissingExpression",
+          "expected": "argument",
+          "range": {
+            "start": 8,
+            "end": 8
+          }
+        }
+      ],
+      "nameRange": {
+        "start": 0,
+        "end": 6
+      },
+      "openParenRange": {
+        "start": 6,
+        "end": 7
+      },
+      "closeParenRange": {
+        "start": 8,
+        "end": 8
+      },
+      "isClosed": false,
+      "range": {
+        "start": 0,
+        "end": 8
+      }
+    },
+    "diagnostics": [
+      {
+        "code": "WDL1001",
+        "message": "Expected argument.",
+        "severity": "error",
+        "range": {
+          "start": 8,
+          "end": 8
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ')' to close the function call.",
+        "severity": "error",
+        "range": {
+          "start": 8,
+          "end": 8
+        }
+      }
+    ]
+  },
+  "incomplete-if.wdlexpr": {
+    "source": "if(equals(\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "if",
+        "lexeme": "if",
+        "start": 0,
+        "end": 2
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 2,
+        "end": 3
+      },
+      {
+        "type": "Identifier",
+        "value": "equals",
+        "lexeme": "equals",
+        "start": 3,
+        "end": 9
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 9,
+        "end": 10
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 11,
+        "end": 11
+      }
+    ],
+    "ast": {
+      "type": "FunctionCall",
+      "name": "if",
+      "arguments": [
+        {
+          "type": "FunctionCall",
+          "name": "equals",
+          "arguments": [
+            {
+              "type": "MissingExpression",
+              "expected": "argument",
+              "range": {
+                "start": 11,
+                "end": 11
+              }
+            }
+          ],
+          "nameRange": {
+            "start": 3,
+            "end": 9
+          },
+          "openParenRange": {
+            "start": 9,
+            "end": 10
+          },
+          "closeParenRange": {
+            "start": 11,
+            "end": 11
+          },
+          "isClosed": false,
+          "range": {
+            "start": 3,
+            "end": 11
+          }
+        }
+      ],
+      "nameRange": {
+        "start": 0,
+        "end": 2
+      },
+      "openParenRange": {
+        "start": 2,
+        "end": 3
+      },
+      "closeParenRange": {
+        "start": 11,
+        "end": 11
+      },
+      "isClosed": false,
+      "range": {
+        "start": 0,
+        "end": 11
+      }
+    },
+    "diagnostics": [
+      {
+        "code": "WDL1001",
+        "message": "Expected argument.",
+        "severity": "error",
+        "range": {
+          "start": 11,
+          "end": 11
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ')' to close the function call.",
+        "severity": "error",
+        "range": {
+          "start": 11,
+          "end": 11
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ')' to close the function call.",
+        "severity": "error",
+        "range": {
+          "start": 11,
+          "end": 11
+        }
+      }
+    ]
+  },
+  "incomplete-safe-index.wdlexpr": {
+    "source": "outputs('Get_User')?[\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "outputs",
+        "lexeme": "outputs",
+        "start": 0,
+        "end": 7
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 7,
+        "end": 8
+      },
+      {
+        "type": "StringLiteral",
+        "value": "Get_User",
+        "lexeme": "'Get_User'",
+        "start": 8,
+        "end": 18
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 18,
+        "end": 19
+      },
+      {
+        "type": "QuestionMark",
+        "value": "?",
+        "lexeme": "?",
+        "start": 19,
+        "end": 20
+      },
+      {
+        "type": "OpenBracket",
+        "value": "[",
+        "lexeme": "[",
+        "start": 20,
+        "end": 21
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 22,
+        "end": 22
+      }
+    ],
+    "ast": {
+      "type": "IndexAccess",
+      "target": {
+        "type": "FunctionCall",
+        "name": "outputs",
+        "arguments": [
+          {
+            "type": "StringLiteral",
+            "value": "Get_User",
+            "raw": "'Get_User'",
+            "range": {
+              "start": 8,
+              "end": 18
+            }
+          }
+        ],
+        "nameRange": {
+          "start": 0,
+          "end": 7
+        },
+        "openParenRange": {
+          "start": 7,
+          "end": 8
+        },
+        "closeParenRange": {
+          "start": 18,
+          "end": 19
+        },
+        "isClosed": true,
+        "range": {
+          "start": 0,
+          "end": 19
+        }
+      },
+      "index": {
+        "type": "MissingExpression",
+        "expected": "expression",
+        "range": {
+          "start": 22,
+          "end": 22
+        }
+      },
+      "operatorRange": {
+        "start": 19,
+        "end": 21
+      },
+      "closeBracketRange": {
+        "start": 22,
+        "end": 22
+      },
+      "isSafe": true,
+      "isClosed": false,
+      "range": {
+        "start": 0,
+        "end": 22
+      }
+    },
+    "diagnostics": [
+      {
+        "code": "WDL1001",
+        "message": "Expected expression.",
+        "severity": "error",
+        "range": {
+          "start": 22,
+          "end": 22
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ']' to close the index access.",
+        "severity": "error",
+        "range": {
+          "start": 22,
+          "end": 22
+        }
+      }
+    ]
+  },
+  "incomplete-substring.wdlexpr": {
+    "source": "substring('Hello',\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "substring",
+        "lexeme": "substring",
+        "start": 0,
+        "end": 9
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 9,
+        "end": 10
+      },
+      {
+        "type": "StringLiteral",
+        "value": "Hello",
+        "lexeme": "'Hello'",
+        "start": 10,
+        "end": 17
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 17,
+        "end": 18
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 19,
+        "end": 19
+      }
+    ],
+    "ast": {
+      "type": "FunctionCall",
+      "name": "substring",
+      "arguments": [
+        {
+          "type": "StringLiteral",
+          "value": "Hello",
+          "raw": "'Hello'",
+          "range": {
+            "start": 10,
+            "end": 17
+          }
+        },
+        {
+          "type": "MissingExpression",
+          "expected": "argument",
+          "range": {
+            "start": 19,
+            "end": 19
+          }
+        }
+      ],
+      "nameRange": {
+        "start": 0,
+        "end": 9
+      },
+      "openParenRange": {
+        "start": 9,
+        "end": 10
+      },
+      "closeParenRange": {
+        "start": 19,
+        "end": 19
+      },
+      "isClosed": false,
+      "range": {
+        "start": 0,
+        "end": 19
+      }
+    },
+    "diagnostics": [
+      {
+        "code": "WDL1001",
+        "message": "Expected argument.",
+        "severity": "error",
+        "range": {
+          "start": 19,
+          "end": 19
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ')' to close the function call.",
+        "severity": "error",
+        "range": {
+          "start": 19,
+          "end": 19
+        }
+      }
+    ]
+  },
+  "invalid-recovery.wdlexpr": {
+    "source": "concat($, toLower(, 'x') trailing\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "concat",
+        "lexeme": "concat",
+        "start": 0,
+        "end": 6
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 6,
+        "end": 7
+      },
+      {
+        "type": "Unknown",
+        "value": "$",
+        "lexeme": "$",
+        "start": 7,
+        "end": 8
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 8,
+        "end": 9
+      },
+      {
+        "type": "Identifier",
+        "value": "toLower",
+        "lexeme": "toLower",
+        "start": 10,
+        "end": 17
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 17,
+        "end": 18
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 18,
+        "end": 19
+      },
+      {
+        "type": "StringLiteral",
+        "value": "x",
+        "lexeme": "'x'",
+        "start": 20,
+        "end": 23
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 23,
+        "end": 24
+      },
+      {
+        "type": "Identifier",
+        "value": "trailing",
+        "lexeme": "trailing",
+        "start": 25,
+        "end": 33
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 34,
+        "end": 34
+      }
+    ],
+    "ast": {
+      "type": "FunctionCall",
+      "name": "concat",
+      "arguments": [
+        {
+          "type": "Unknown",
+          "raw": "$",
+          "range": {
+            "start": 7,
+            "end": 8
+          }
+        },
+        {
+          "type": "FunctionCall",
+          "name": "toLower",
+          "arguments": [
+            {
+              "type": "MissingExpression",
+              "expected": "expression",
+              "range": {
+                "start": 18,
+                "end": 18
+              }
+            },
+            {
+              "type": "StringLiteral",
+              "value": "x",
+              "raw": "'x'",
+              "range": {
+                "start": 20,
+                "end": 23
+              }
+            }
+          ],
+          "nameRange": {
+            "start": 10,
+            "end": 17
+          },
+          "openParenRange": {
+            "start": 17,
+            "end": 18
+          },
+          "closeParenRange": {
+            "start": 23,
+            "end": 24
+          },
+          "isClosed": true,
+          "range": {
+            "start": 10,
+            "end": 24
+          }
+        }
+      ],
+      "nameRange": {
+        "start": 0,
+        "end": 6
+      },
+      "openParenRange": {
+        "start": 6,
+        "end": 7
+      },
+      "closeParenRange": {
+        "start": 34,
+        "end": 34
+      },
+      "isClosed": false,
+      "range": {
+        "start": 0,
+        "end": 24
+      }
+    },
+    "diagnostics": [
+      {
+        "code": "WDL1003",
+        "message": "Unexpected input \"$\".",
+        "severity": "error",
+        "range": {
+          "start": 7,
+          "end": 8
+        }
+      },
+      {
+        "code": "WDL1001",
+        "message": "Expected expression.",
+        "severity": "error",
+        "range": {
+          "start": 18,
+          "end": 18
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ',' or ')' after the function argument.",
+        "severity": "error",
+        "range": {
+          "start": 25,
+          "end": 33
+        }
+      },
+      {
+        "code": "WDL1002",
+        "message": "Expected ')' to close the function call.",
+        "severity": "error",
+        "range": {
+          "start": 34,
+          "end": 34
+        }
+      }
+    ]
+  },
+  "nested.wdlexpr": {
+    "source": "if(\n    empty(variables('Name')),\n    'Unknown',\n    trim(variables('Name'))\n)\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "if",
+        "lexeme": "if",
+        "start": 0,
+        "end": 2
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 2,
+        "end": 3
+      },
+      {
+        "type": "Identifier",
+        "value": "empty",
+        "lexeme": "empty",
+        "start": 8,
+        "end": 13
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 13,
+        "end": 14
+      },
+      {
+        "type": "Identifier",
+        "value": "variables",
+        "lexeme": "variables",
+        "start": 14,
+        "end": 23
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 23,
+        "end": 24
+      },
+      {
+        "type": "StringLiteral",
+        "value": "Name",
+        "lexeme": "'Name'",
+        "start": 24,
+        "end": 30
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 30,
+        "end": 31
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 31,
+        "end": 32
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 32,
+        "end": 33
+      },
+      {
+        "type": "StringLiteral",
+        "value": "Unknown",
+        "lexeme": "'Unknown'",
+        "start": 38,
+        "end": 47
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 47,
+        "end": 48
+      },
+      {
+        "type": "Identifier",
+        "value": "trim",
+        "lexeme": "trim",
+        "start": 53,
+        "end": 57
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 57,
+        "end": 58
+      },
+      {
+        "type": "Identifier",
+        "value": "variables",
+        "lexeme": "variables",
+        "start": 58,
+        "end": 67
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 67,
+        "end": 68
+      },
+      {
+        "type": "StringLiteral",
+        "value": "Name",
+        "lexeme": "'Name'",
+        "start": 68,
+        "end": 74
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 74,
+        "end": 75
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 75,
+        "end": 76
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 77,
+        "end": 78
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 79,
+        "end": 79
+      }
+    ],
+    "ast": {
+      "type": "FunctionCall",
+      "name": "if",
+      "arguments": [
+        {
+          "type": "FunctionCall",
+          "name": "empty",
+          "arguments": [
+            {
+              "type": "FunctionCall",
+              "name": "variables",
+              "arguments": [
+                {
+                  "type": "StringLiteral",
+                  "value": "Name",
+                  "raw": "'Name'",
+                  "range": {
+                    "start": 24,
+                    "end": 30
+                  }
+                }
+              ],
+              "nameRange": {
+                "start": 14,
+                "end": 23
+              },
+              "openParenRange": {
+                "start": 23,
+                "end": 24
+              },
+              "closeParenRange": {
+                "start": 30,
+                "end": 31
+              },
+              "isClosed": true,
+              "range": {
+                "start": 14,
+                "end": 31
+              }
+            }
+          ],
+          "nameRange": {
+            "start": 8,
+            "end": 13
+          },
+          "openParenRange": {
+            "start": 13,
+            "end": 14
+          },
+          "closeParenRange": {
+            "start": 31,
+            "end": 32
+          },
+          "isClosed": true,
+          "range": {
+            "start": 8,
+            "end": 32
+          }
+        },
+        {
+          "type": "StringLiteral",
+          "value": "Unknown",
+          "raw": "'Unknown'",
+          "range": {
+            "start": 38,
+            "end": 47
+          }
+        },
+        {
+          "type": "FunctionCall",
+          "name": "trim",
+          "arguments": [
+            {
+              "type": "FunctionCall",
+              "name": "variables",
+              "arguments": [
+                {
+                  "type": "StringLiteral",
+                  "value": "Name",
+                  "raw": "'Name'",
+                  "range": {
+                    "start": 68,
+                    "end": 74
+                  }
+                }
+              ],
+              "nameRange": {
+                "start": 58,
+                "end": 67
+              },
+              "openParenRange": {
+                "start": 67,
+                "end": 68
+              },
+              "closeParenRange": {
+                "start": 74,
+                "end": 75
+              },
+              "isClosed": true,
+              "range": {
+                "start": 58,
+                "end": 75
+              }
+            }
+          ],
+          "nameRange": {
+            "start": 53,
+            "end": 57
+          },
+          "openParenRange": {
+            "start": 57,
+            "end": 58
+          },
+          "closeParenRange": {
+            "start": 75,
+            "end": 76
+          },
+          "isClosed": true,
+          "range": {
+            "start": 53,
+            "end": 76
+          }
+        }
+      ],
+      "nameRange": {
+        "start": 0,
+        "end": 2
+      },
+      "openParenRange": {
+        "start": 2,
+        "end": 3
+      },
+      "closeParenRange": {
+        "start": 77,
+        "end": 78
+      },
+      "isClosed": true,
+      "range": {
+        "start": 0,
+        "end": 78
+      }
+    },
+    "diagnostics": []
+  },
+  "property-access.wdlexpr": {
+    "source": "outputs('Get_User')?['body/Email']\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "outputs",
+        "lexeme": "outputs",
+        "start": 0,
+        "end": 7
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 7,
+        "end": 8
+      },
+      {
+        "type": "StringLiteral",
+        "value": "Get_User",
+        "lexeme": "'Get_User'",
+        "start": 8,
+        "end": 18
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 18,
+        "end": 19
+      },
+      {
+        "type": "QuestionMark",
+        "value": "?",
+        "lexeme": "?",
+        "start": 19,
+        "end": 20
+      },
+      {
+        "type": "OpenBracket",
+        "value": "[",
+        "lexeme": "[",
+        "start": 20,
+        "end": 21
+      },
+      {
+        "type": "StringLiteral",
+        "value": "body/Email",
+        "lexeme": "'body/Email'",
+        "start": 21,
+        "end": 33
+      },
+      {
+        "type": "CloseBracket",
+        "value": "]",
+        "lexeme": "]",
+        "start": 33,
+        "end": 34
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 35,
+        "end": 35
+      }
+    ],
+    "ast": {
+      "type": "IndexAccess",
+      "target": {
+        "type": "FunctionCall",
+        "name": "outputs",
+        "arguments": [
+          {
+            "type": "StringLiteral",
+            "value": "Get_User",
+            "raw": "'Get_User'",
+            "range": {
+              "start": 8,
+              "end": 18
+            }
+          }
+        ],
+        "nameRange": {
+          "start": 0,
+          "end": 7
+        },
+        "openParenRange": {
+          "start": 7,
+          "end": 8
+        },
+        "closeParenRange": {
+          "start": 18,
+          "end": 19
+        },
+        "isClosed": true,
+        "range": {
+          "start": 0,
+          "end": 19
+        }
+      },
+      "index": {
+        "type": "StringLiteral",
+        "value": "body/Email",
+        "raw": "'body/Email'",
+        "range": {
+          "start": 21,
+          "end": 33
+        }
+      },
+      "operatorRange": {
+        "start": 19,
+        "end": 21
+      },
+      "closeBracketRange": {
+        "start": 33,
+        "end": 34
+      },
+      "isSafe": true,
+      "isClosed": true,
+      "range": {
+        "start": 0,
+        "end": 34
+      }
+    },
+    "diagnostics": []
+  },
+  "simple.wdlexpr": {
+    "source": "concat('Hello ', 'World')\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "concat",
+        "lexeme": "concat",
+        "start": 0,
+        "end": 6
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 6,
+        "end": 7
+      },
+      {
+        "type": "StringLiteral",
+        "value": "Hello ",
+        "lexeme": "'Hello '",
+        "start": 7,
+        "end": 15
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 15,
+        "end": 16
+      },
+      {
+        "type": "StringLiteral",
+        "value": "World",
+        "lexeme": "'World'",
+        "start": 17,
+        "end": 24
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 24,
+        "end": 25
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 26,
+        "end": 26
+      }
+    ],
+    "ast": {
+      "type": "FunctionCall",
+      "name": "concat",
+      "arguments": [
+        {
+          "type": "StringLiteral",
+          "value": "Hello ",
+          "raw": "'Hello '",
+          "range": {
+            "start": 7,
+            "end": 15
+          }
+        },
+        {
+          "type": "StringLiteral",
+          "value": "World",
+          "raw": "'World'",
+          "range": {
+            "start": 17,
+            "end": 24
+          }
+        }
+      ],
+      "nameRange": {
+        "start": 0,
+        "end": 6
+      },
+      "openParenRange": {
+        "start": 6,
+        "end": 7
+      },
+      "closeParenRange": {
+        "start": 24,
+        "end": 25
+      },
+      "isClosed": true,
+      "range": {
+        "start": 0,
+        "end": 25
+      }
+    },
+    "diagnostics": []
+  }
+}
