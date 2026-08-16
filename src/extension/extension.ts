@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { registerNewExpressionCommand } from "./commands/newExpression";
+import { WdlCompletionProvider } from "./providers/completionProvider";
 import {
   WdlDocumentFormattingProvider,
   WdlDocumentRangeFormattingProvider,
@@ -34,6 +35,10 @@ export function activate(context: vscode.ExtensionContext): void {
       new WdlSignatureHelpProvider(analysis),
       "(",
       ",",
+    ),
+    vscode.languages.registerCompletionItemProvider(
+      wdlDocumentSelector,
+      new WdlCompletionProvider(analysis),
     ),
   );
 }

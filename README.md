@@ -54,6 +54,11 @@ Signature help opens after `(` and `,` and tracks the active argument for known
 functions, including nested and incomplete calls. Signatures describe catalog
 types only; they cannot suggest values from a particular flow or connector.
 
+Function completion filters the built-in catalog as you type and inserts calls
+as snippets with ordered parameter tab stops. Completion covers function names
+only; it does not suggest variables, actions, triggers, connectors, or other
+runtime values from a flow.
+
 ## Prerequisites
 
 - Node.js 24 or another Node.js version supported by the package toolchain

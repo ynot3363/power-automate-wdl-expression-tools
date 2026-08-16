@@ -32,6 +32,8 @@ export {
   resolveFormatterOptions,
 } from "./formatter/formatterOptions";
 export { WdlFormatter } from "./formatter/wdlFormatter";
+export type { WdlFunctionCompletionContext } from "./completion/functionCompletionContext";
+export { getWdlFunctionCompletionContext } from "./completion/functionCompletionContext";
 export type { WdlType } from "./analyzer/wdlTypes";
 export { isWdlType, wdlTypes } from "./analyzer/wdlTypes";
 export type { WdlTypeInference } from "./analyzer/typeInference";

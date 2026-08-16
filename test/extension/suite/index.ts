@@ -84,6 +84,7 @@ export async function run(): Promise<void> {
     await verifyFormatting();
     await verifyHover();
     await verifySignatureHelp();
+    await verifyCompletion();
   } finally {
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
     await rm(fixtureDirectory, { force: true, recursive: true });
@@ -381,4 +382,133 @@ function signatureParameterDocumentation(
     return "";
   }
   return typeof documentation === "string" ? documentation : documentation.value;
+}
+
+async function verifyCompletion(): Promise<void> {
+  const prefixDocument = await openExpression("sub");
+  const prefixItems = await executeCompletion(
+    prefixDocument,
+    prefixDocument.positionAt(prefixDocument.getText().length),
+  );
+  const prefixLabels = prefixItems.map(completionLabel);
+  equal(new Set(prefixLabels).size, prefixLabels.length, "Completion labels must be unique.");
+  ok(prefixLabels.includes("sub"), "The 'sub' prefix should include sub.");
+  ok(prefixLabels.includes("substring"), "The 'sub' prefix should include substring.");
+  ok(
+    prefixLabels.includes("subtractFromTime"),
+    "The 'sub' prefix should include subtractFromTime.",
+  );
+
+  const substringItem = prefixItems.find(
+    (item) => completionLabel(item) === "substring",
+  );
+  ok(substringItem, "Expected a substring completion item.");
+  ok(substringItem.detail?.includes("String function"), "Completion should show its category.");
+  ok(
+    substringItem.detail?.includes("length?"),
+    "Completion should show signature details.",
+  );
+  ok(
+    completionDocumentation(substringItem).includes("learn.microsoft.com"),
+    "Completion should include Microsoft documentation.",
+  );
+  equal(
+    completionSnippet(substringItem),
+    "substring(${1:text}, ${2:startIndex}, ${3:length})$0",
+    "Optional parameters should have ordered snippet tab stops.",
+  );
+
+  const concatItem = (
+    await executeCompletion(await openExpression("con"), new vscode.Position(0, 3))
+  ).find((item) => completionLabel(item) === "concat");
+  ok(concatItem, "Expected a concat completion item.");
+  equal(
+    completionSnippet(concatItem),
+    "concat(${1:text}, ${2:additionalText})$0",
+    "Variadic signatures should insert one predictable variadic placeholder.",
+  );
+
+  const firstItem = (
+    await executeCompletion(await openExpression("fir"), new vscode.Position(0, 3))
+  ).find((item) => completionLabel(item) === "first");
+  ok(firstItem, "Expected a first completion item.");
+  equal(
+    completionSnippet(firstItem),
+    "first(${1:collection})$0",
+    "Overloads should use the first catalog signature deterministically.",
+  );
+
+  const emptyItems = await executeCompletion(
+    await openExpression(""),
+    new vscode.Position(0, 0),
+  );
+  ok(emptyItems.length > prefixItems.length, "An empty root prefix should expose the catalog.");
+  ok(
+    !emptyItems.map(completionLabel).includes("Get_User"),
+    "Completion should not invent flow-context values.",
+  );
+
+  const incompleteDocument = await openExpression("if(true, sub");
+  ok(
+    (
+      await executeCompletion(
+        incompleteDocument,
+        incompleteDocument.positionAt(incompleteDocument.getText().length),
+      )
+    )
+      .map(completionLabel)
+      .includes("substring"),
+    "Completion should work in an incomplete argument position.",
+  );
+
+  const stringDocument = await openExpression("'sub'");
+  equal(
+    (
+      await executeCompletion(stringDocument, new vscode.Position(0, 2))
+    ).length,
+    0,
+    "Completion should not appear inside strings.",
+  );
+
+  const propertyDocument = await openExpression("variables('x').sub");
+  equal(
+    (
+      await executeCompletion(
+        propertyDocument,
+        propertyDocument.positionAt(propertyDocument.getText().length),
+      )
+    ).length,
+    0,
+    "Completion should not appear for access properties.",
+  );
+}
+
+async function executeCompletion(
+  document: vscode.TextDocument,
+  position: vscode.Position,
+): Promise<readonly vscode.CompletionItem[]> {
+  const result = await vscode.commands.executeCommand<vscode.CompletionList>(
+    "vscode.executeCompletionItemProvider",
+    document.uri,
+    position,
+  );
+  return result.items.filter(({ detail }) => detail?.includes(" function — "));
+}
+
+function completionLabel(item: vscode.CompletionItem): string {
+  return typeof item.label === "string" ? item.label : item.label.label;
+}
+
+function completionDocumentation(item: vscode.CompletionItem): string {
+  const documentation = item.documentation;
+  if (documentation === undefined) {
+    return "";
+  }
+  return typeof documentation === "string" ? documentation : documentation.value;
+}
+
+function completionSnippet(item: vscode.CompletionItem): string | undefined {
+  return item.insertText instanceof vscode.SnippetString
+    ? item.insertText.value
+    : undefined;
 }
