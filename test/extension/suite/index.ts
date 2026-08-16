@@ -392,10 +392,24 @@ async function verifyHover(): Promise<void> {
   const knownMarkdown = hoverMarkdown(knownHovers[0]);
   ok(knownMarkdown.includes("concat("), "Hover should include the signature.");
   ok(
+    knownMarkdown.includes("```power-automate-wdl-expression"),
+    "Hover code blocks should use the registered language for theme-aware highlighting.",
+  );
+  ok(
+    knownMarkdown.includes("$(symbol-function)"),
+    "Hover should include a theme-aware function icon.",
+  );
+  ok(
+    knownMarkdown.includes("String") && knownMarkdown.includes("function"),
+    `Hover should include the category. Rendered: ${knownMarkdown}`,
+  );
+  ok(
     knownMarkdown.includes("Combines"),
     `Hover should include the description. Rendered: ${knownMarkdown}`,
   );
   ok(knownMarkdown.includes("additionalText"), "Hover should include parameter help.");
+  ok(knownMarkdown.includes("| Name | Type | Requirement | Description |"));
+  ok(knownMarkdown.includes("Required, repeatable"));
   ok(knownMarkdown.includes("Returns"), "Hover should include the return type.");
   ok(knownMarkdown.includes("Hello world"), "Hover should include an example result.");
   ok(knownMarkdown.includes("learn.microsoft.com"), "Hover should link to Microsoft documentation.");
@@ -404,6 +418,21 @@ async function verifyHover(): Promise<void> {
       content instanceof vscode.MarkdownString,
   );
   equal(markdownContent?.isTrusted, false, "Hover Markdown must not be trusted.");
+  equal(
+    markdownContent.supportThemeIcons,
+    true,
+    "Hover Markdown should support theme-aware icons.",
+  );
+  equal(markdownContent.supportHtml, false, "Hover Markdown must not render HTML.");
+
+  const deprecatedDocument = await openExpression("parse('value')");
+  const deprecatedMarkdown = hoverMarkdown(
+    (await executeHovers(deprecatedDocument, new vscode.Position(0, 1)))[0],
+  );
+  ok(
+    deprecatedMarkdown.includes("$(warning) **Deprecated**"),
+    "Deprecated functions should display a prominent warning.",
+  );
 
   const nestedDocument = await openExpression(
     "if(equals(1, 1), toLower('YES'), 'no')",
@@ -620,6 +649,16 @@ async function verifyCompletion(): Promise<void> {
     completionSnippet(concatItem),
     "concat(${1:text}, ${2:additionalText})$0",
     "Variadic signatures should insert one predictable variadic placeholder.",
+  );
+
+  const addPropertyItem = (
+    await executeCompletion(await openExpression("addP"), new vscode.Position(0, 4))
+  ).find((item) => completionLabel(item) === "addProperty");
+  ok(addPropertyItem, "Expected an addProperty completion item.");
+  equal(
+    completionSnippet(addPropertyItem),
+    "addProperty(${1:object}, ${2:property}, ${3:value})$0",
+    "addProperty should insert all three required arguments.",
   );
 
   const firstItem = (

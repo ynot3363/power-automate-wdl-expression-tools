@@ -8,6 +8,8 @@ import {
 } from "../../language";
 import type { DocumentAnalysisService } from "../services/documentAnalysisService";
 
+const wdlLanguageId = "power-automate-wdl-expression";
+
 export class WdlHoverProvider implements vscode.HoverProvider {
   public constructor(private readonly analysis: DocumentAnalysisService) {}
 
@@ -54,38 +56,60 @@ function renderHover(
   markdown.isTrusted = false;
   markdown.supportHtml = false;
 
+  markdown.appendMarkdown("$(symbol-function) **");
+  markdown.appendText(definition.name);
+  markdown.appendMarkdown("** · ");
+  markdown.appendText(`${definition.category} function`);
+  markdown.appendMarkdown("\n\n");
+
   for (const signature of signatures) {
-    markdown.appendCodeblock(formatSignature(definition.name, signature), "wdl");
+    markdown.appendCodeblock(
+      formatSignature(definition.name, signature),
+      wdlLanguageId,
+    );
   }
 
-  markdown.appendText(definition.description);
-  markdown.appendMarkdown("\n\n**Parameters**\n\n");
+  const description = deprecatedDescription(definition.description);
+  if (description !== undefined) {
+    markdown.appendMarkdown("$(warning) **Deprecated**\n\n");
+    markdown.appendText(description);
+  } else {
+    markdown.appendText(definition.description);
+  }
+
+  markdown.appendMarkdown("\n\n---\n\n$(symbol-parameter) **Parameters**\n\n");
   const parameters = uniqueParameters(signatures);
   if (parameters.length === 0) {
-    markdown.appendText("None.");
+    markdown.appendMarkdown("_None._");
   } else {
+    markdown.appendMarkdown(
+      "| Name | Type | Requirement | Description |\n" +
+        "| --- | --- | --- | --- |\n",
+    );
     for (const parameter of parameters) {
-      markdown.appendMarkdown(`- \`${escapeInlineCode(parameter.name)}\` — `);
-      markdown.appendText(parameter.description ?? "No description available.");
-      markdown.appendMarkdown("\n");
+      markdown.appendMarkdown(
+        `| \`${escapeInlineCode(parameter.name)}\` | ${formatTypes(parameter.types)} | ${formatRequirement(parameter.required, parameter.variadic)} | ${escapeTableCell(parameter.description ?? "No description available.")} |\n`,
+      );
     }
   }
 
-  markdown.appendMarkdown("\n**Returns:** ");
-  markdown.appendText(
-    [...new Set(signatures.map(({ returnType }) => returnType))].join(" or "),
+  markdown.appendMarkdown(
+    `\n$(arrow-right) **Returns** ${formatTypes(
+      [...new Set(signatures.map(({ returnType }) => returnType))],
+    )}`,
   );
 
   if (definition.examples !== undefined && definition.examples.length > 0) {
-    markdown.appendMarkdown("\n\n**Examples**\n");
+    const heading = definition.examples.length === 1 ? "Example" : "Examples";
+    markdown.appendMarkdown(`\n\n---\n\n$(beaker) **${heading}**\n\n`);
     for (const example of definition.examples) {
-      markdown.appendCodeblock(example.expression, "wdl");
+      markdown.appendCodeblock(example.expression, wdlLanguageId);
       if (example.description !== undefined) {
         markdown.appendText(example.description);
         markdown.appendMarkdown("\n\n");
       }
       if (example.result !== undefined) {
-        markdown.appendMarkdown("Result: ");
+        markdown.appendMarkdown("**Result**\n\n");
         markdown.appendCodeblock(example.result, "text");
       }
     }
@@ -93,7 +117,7 @@ function renderHover(
 
   if (isMicrosoftDocumentationUrl(definition.documentationUrl)) {
     markdown.appendMarkdown(
-      `\n\n[Microsoft documentation](${definition.documentationUrl})`,
+      `\n\n---\n\n$(link-external) [Microsoft documentation](${definition.documentationUrl})`,
     );
   }
 
@@ -120,6 +144,27 @@ function uniqueParameters(signatures: readonly WdlFunctionSignature[]) {
   );
 }
 
+function formatTypes(types: readonly string[]): string {
+  return types.map((type) => `\`${escapeInlineCode(type)}\``).join(" or ");
+}
+
+function formatRequirement(
+  required: boolean,
+  variadic: boolean | undefined,
+): string {
+  if (variadic === true) {
+    return required ? "Required, repeatable" : "Optional, repeatable";
+  }
+  return required ? "Required" : "Optional";
+}
+
+function deprecatedDescription(description: string): string | undefined {
+  const prefix = "Deprecated:";
+  return description.startsWith(prefix)
+    ? description.slice(prefix.length).trimStart()
+    : undefined;
+}
+
 function isMicrosoftDocumentationUrl(url: string | undefined): url is string {
   if (url === undefined) {
     return false;
@@ -131,4 +176,12 @@ function isMicrosoftDocumentationUrl(url: string | undefined): url is string {
 
 function escapeInlineCode(value: string): string {
   return value.replaceAll("`", "\\`");
+}
+
+function escapeTableCell(value: string): string {
+  return value
+    .replaceAll("\\", "\\\\")
+    .replaceAll("|", "\\|")
+    .replaceAll("\r\n", " ")
+    .replaceAll("\n", " ");
 }
