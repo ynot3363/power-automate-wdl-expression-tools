@@ -4,6 +4,7 @@ import {
   WdlDocumentFormattingProvider,
   WdlDocumentRangeFormattingProvider,
 } from "./providers/formattingProviders";
+import { WdlHoverProvider } from "./providers/hoverProvider";
 import { DocumentAnalysisService } from "./services/documentAnalysisService";
 
 const wdlDocumentSelector: vscode.DocumentSelector = {
@@ -22,6 +23,10 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.languages.registerDocumentRangeFormattingEditProvider(
       wdlDocumentSelector,
       new WdlDocumentRangeFormattingProvider(analysis),
+    ),
+    vscode.languages.registerHoverProvider(
+      wdlDocumentSelector,
+      new WdlHoverProvider(analysis),
     ),
   );
 }

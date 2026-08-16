@@ -43,6 +43,13 @@ Formatting uses four spaces by default. Configure
 or set `powerAutomateWdlExpressions.format.useTabs` to `true` to indent with
 tabs. Both settings can be scoped to a workspace, folder, or language.
 
+### Function help
+
+Hover over a recognized function name to see its catalog-backed signatures,
+parameters, return types, examples, and a link to the Microsoft reference. The
+catalog is stored with the extension and does not fetch remote documentation or
+know the actions, variables, or schemas in a particular flow.
+
 ## Prerequisites
 
 - Node.js 24 or another Node.js version supported by the package toolchain

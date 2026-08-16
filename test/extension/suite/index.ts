@@ -82,6 +82,7 @@ export async function run(): Promise<void> {
     );
 
     await verifyFormatting();
+    await verifyHover();
   } finally {
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
     await rm(fixtureDirectory, { force: true, recursive: true });
@@ -186,4 +187,95 @@ async function openExpression(content: string): Promise<vscode.TextDocument> {
   });
   await vscode.window.showTextDocument(document);
   return document;
+}
+
+async function verifyHover(): Promise<void> {
+  const knownDocument = await openExpression("concat('left', 'right')");
+  const knownHovers = await executeHovers(knownDocument, new vscode.Position(0, 1));
+  equal(knownHovers.length, 1, "A known function name should provide hover help.");
+  const knownMarkdown = hoverMarkdown(knownHovers[0]);
+  ok(knownMarkdown.includes("concat("), "Hover should include the signature.");
+  ok(
+    knownMarkdown.includes("Combines"),
+    `Hover should include the description. Rendered: ${knownMarkdown}`,
+  );
+  ok(knownMarkdown.includes("additionalText"), "Hover should include parameter help.");
+  ok(knownMarkdown.includes("Returns"), "Hover should include the return type.");
+  ok(knownMarkdown.includes("Hello world"), "Hover should include an example result.");
+  ok(knownMarkdown.includes("learn.microsoft.com"), "Hover should link to Microsoft documentation.");
+  const markdownContent = knownHovers[0]?.contents.find(
+    (content): content is vscode.MarkdownString =>
+      content instanceof vscode.MarkdownString,
+  );
+  equal(markdownContent?.isTrusted, false, "Hover Markdown must not be trusted.");
+
+  const nestedDocument = await openExpression(
+    "if(equals(1, 1), toLower('YES'), 'no')",
+  );
+  const nestedHovers = await executeHovers(
+    nestedDocument,
+    new vscode.Position(0, 20),
+  );
+  ok(
+    hoverMarkdown(nestedHovers[0]).includes("toLower("),
+    "Nested hover should select the innermost function name.",
+  );
+
+  const boundaryHovers = await executeHovers(
+    knownDocument,
+    new vscode.Position(0, "concat".length),
+  );
+  equal(boundaryHovers.length, 0, "The name's exclusive end should not own hover.");
+
+  const unknownDocument = await openExpression("mystery('value')");
+  equal(
+    (await executeHovers(unknownDocument, new vscode.Position(0, 2))).length,
+    0,
+    "Unknown functions should not provide hover help.",
+  );
+
+  const escapedDocument = await openExpression("concat('toLower(''x'')', 'y')");
+  equal(
+    (
+      await executeHovers(
+        escapedDocument,
+        new vscode.Position(0, escapedDocument.getText().indexOf("toLower") + 1),
+      )
+    ).length,
+    0,
+    "Function-like text inside an escaped string should not provide hover help.",
+  );
+
+  const incompleteDocument = await openExpression("substring(");
+  equal(
+    (await executeHovers(incompleteDocument, new vscode.Position(0, 3))).length,
+    1,
+    "Incomplete known calls should still provide hover help on the name.",
+  );
+}
+
+async function executeHovers(
+  document: vscode.TextDocument,
+  position: vscode.Position,
+): Promise<readonly vscode.Hover[]> {
+  return (
+    (await vscode.commands.executeCommand<readonly vscode.Hover[] | undefined>(
+      "vscode.executeHoverProvider",
+      document.uri,
+      position,
+    )) ?? []
+  );
+}
+
+function hoverMarkdown(hover: vscode.Hover | undefined): string {
+  ok(hover, "Expected a hover result.");
+  return hover.contents
+    .map((content) =>
+      content instanceof vscode.MarkdownString
+        ? content.value
+        : typeof content === "string"
+          ? content
+          : "",
+    )
+    .join("\n");
 }

@@ -16,6 +16,7 @@ export type {
 } from "./ast/nodes";
 export type { SourceRange } from "./ast/sourceRange";
 export { sourceRange, spanRanges } from "./ast/sourceRange";
+export { findFunctionCallAtNameOffset } from "./ast/queries";
 export type { WdlAstVisitor } from "./ast/visitors";
 export { visitExpression } from "./ast/visitors";
 export type { Token } from "./lexer/token";
