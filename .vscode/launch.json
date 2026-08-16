@@ -12,6 +12,14 @@
         "${workspaceFolder}/dist/**/*.js"
       ],
       "preLaunchTask": "npm: build"
+    },
+    {
+      "name": "Run Extension Integration Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/test/extension/runTest.js",
+      "console": "integratedTerminal",
+      "preLaunchTask": "npm: build"
     }
   ]
 }

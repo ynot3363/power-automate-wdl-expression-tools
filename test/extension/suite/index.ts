@@ -20,6 +20,34 @@ export async function run(): Promise<void> {
   await extension.activate();
   equal(extension.isActive, true, "The extension should activate.");
 
+  const fixtureDirectory = await mkdtemp(join(tmpdir(), "wdlexpr-test-"));
+  try {
+    await runScenario("manifest, language, and command registration", async () => {
+      await verifyManifestAndRegistration(extension, fixtureDirectory);
+    });
+    await runScenario("format and minify utility commands", verifyUtilityCommands);
+    await runScenario("native document and selection formatting", verifyFormatting);
+    await runScenario("catalog-backed hover", verifyHover);
+    await runScenario("nested signature help", verifySignatureHelp);
+    await runScenario("catalog-backed completion", verifyCompletion);
+    await runScenario("diagnostics and document lifecycle", verifyDiagnostics);
+  } finally {
+    await resetExtensionTestState();
+    await rm(fixtureDirectory, { force: true, recursive: true });
+  }
+
+  equal(
+    vscode.window.activeTextEditor,
+    undefined,
+    "The integration suite should leave no active editor state.",
+  );
+}
+
+async function verifyManifestAndRegistration(
+  extension: vscode.Extension<unknown>,
+  fixtureDirectory: string,
+): Promise<void> {
+
   const packageJson = extension.packageJSON as {
     contributes?: {
       configuration?: {
@@ -78,38 +106,24 @@ export async function run(): Promise<void> {
     "The minify-expression command should be registered.",
   );
 
-  const fixtureDirectory = await mkdtemp(join(tmpdir(), "wdlexpr-test-"));
   const fixturePath = join(fixtureDirectory, "automatic.wdlexpr");
+  await writeFile(fixturePath, "concat('Hello', 'World')", "utf8");
+  const fileDocument = await vscode.workspace.openTextDocument(fixturePath);
+  equal(
+    fileDocument.languageId,
+    LANGUAGE_ID,
+    ".wdlexpr files should select the WDL language automatically.",
+  );
 
-  try {
-    await writeFile(fixturePath, "concat('Hello', 'World')", "utf8");
-    const fileDocument = await vscode.workspace.openTextDocument(fixturePath);
-    equal(
-      fileDocument.languageId,
-      LANGUAGE_ID,
-      ".wdlexpr files should select the WDL language automatically.",
-    );
-
-    await vscode.commands.executeCommand(NEW_EXPRESSION_COMMAND_ID);
-    const activeDocument = vscode.window.activeTextEditor?.document;
-    ok(activeDocument, "The command should open an editor.");
-    equal(activeDocument.isUntitled, true, "The new document should be untitled.");
-    equal(
-      activeDocument.languageId,
-      LANGUAGE_ID,
-      "The new document should use the WDL language.",
-    );
-
-    await verifyUtilityCommands();
-    await verifyFormatting();
-    await verifyHover();
-    await verifySignatureHelp();
-    await verifyCompletion();
-    await verifyDiagnostics();
-  } finally {
-    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
-    await rm(fixtureDirectory, { force: true, recursive: true });
-  }
+  await vscode.commands.executeCommand(NEW_EXPRESSION_COMMAND_ID);
+  const activeDocument = vscode.window.activeTextEditor?.document;
+  ok(activeDocument, "The command should open an editor.");
+  equal(activeDocument.isUntitled, true, "The new document should be untitled.");
+  equal(
+    activeDocument.languageId,
+    LANGUAGE_ID,
+    "The new document should use the WDL language.",
+  );
 }
 
 async function verifyUtilityCommands(): Promise<void> {
@@ -827,4 +841,42 @@ async function delay(milliseconds: number): Promise<void> {
   await new Promise<void>((resolve) => {
     setTimeout(resolve, milliseconds);
   });
+}
+
+async function runScenario(
+  name: string,
+  scenario: () => Promise<void>,
+): Promise<void> {
+  process.stdout.write(`\n[extension integration] ${name}\n`);
+  try {
+    await scenario();
+    process.stdout.write(`[extension integration] passed: ${name}\n`);
+  } catch (error: unknown) {
+    throw new Error(`Extension integration scenario failed: ${name}`, {
+      cause: error,
+    });
+  } finally {
+    await resetExtensionTestState();
+  }
+}
+
+async function resetExtensionTestState(): Promise<void> {
+  const formatting = vscode.workspace.getConfiguration(
+    "powerAutomateWdlExpressions.format",
+  );
+  await resetFormattingConfiguration(formatting);
+  await vscode.workspace
+    .getConfiguration("powerAutomateWdlExpressions.diagnostics")
+    .update("enabled", undefined, vscode.ConfigurationTarget.Global);
+
+  for (let remainingEditors = 100; remainingEditors > 0; remainingEditors -= 1) {
+    if (vscode.window.activeTextEditor === undefined) {
+      return;
+    }
+    await vscode.commands.executeCommand(
+      "workbench.action.revertAndCloseActiveEditor",
+    );
+  }
+
+  throw new Error("Unable to close all integration-test editors.");
 }

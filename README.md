@@ -98,6 +98,25 @@ Run the extension integration test separately:
 npm run test:integration
 ```
 
+Run every local quality gate, including the Extension Development Host suite:
+
+```sh
+npm run test:all
+```
+
+The integration suite launches a clean VS Code host, prints a named scenario
+before each provider or lifecycle group, and discards temporary editors and
+settings after each scenario. On a headless Linux machine, run it with a virtual
+display:
+
+```sh
+xvfb-run -a npm run test:integration
+```
+
+For interactive debugging, build the project and run
+`out/test/extension/runTest.js` with a debugger attached. Language-engine tests
+remain independent of VS Code and can be run alone with `npm run test:unit`.
+
 To launch the extension manually, open the repository in VS Code and run the
 `Run Extension` launch configuration. This starts an Extension Development
 Host with the local build loaded.

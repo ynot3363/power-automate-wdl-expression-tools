@@ -95,6 +95,7 @@
     "inspect:ast": "tsx scripts/printAst.ts",
     "lint": "eslint .",
     "test": "npm run test:unit",
+    "test:all": "npm run validate && npm run test:integration",
     "test:integration": "npm run build && node out/test/extension/runTest.js",
     "test:unit": "vitest run test/unit",
     "typecheck": "tsc --noEmit",
