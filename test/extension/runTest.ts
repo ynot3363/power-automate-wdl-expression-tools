@@ -12,6 +12,7 @@ async function main(): Promise<void> {
   await runTests({
     extensionDevelopmentPath,
     extensionTestsPath,
+    version: "1.133.0",
     launchArgs: [
       "--disable-extensions",
       "--disable-gpu",

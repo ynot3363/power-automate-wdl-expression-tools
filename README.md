@@ -1,5 +1,7 @@
 # Power Automate WDL Expression Tools
 
+[![Validation](https://github.com/ynot3363/power-automate-wdl-expression-tools/actions/workflows/validation.yml/badge.svg)](https://github.com/ynot3363/power-automate-wdl-expression-tools/actions/workflows/validation.yml)
+
 Write, understand, validate, and reformat standalone Microsoft Power Automate
 and Azure Logic Apps Workflow Definition Language (WDL) expressions without
 leaving Visual Studio Code.
@@ -137,11 +139,18 @@ npm run test:all
 
 The integration suite launches a clean VS Code host and reports a named
 scenario for language registration, commands, formatting, hover, signature
-help, completion, and diagnostic lifecycle behavior. On headless Linux, use:
+help, completion, and diagnostic lifecycle behavior. It runs against the
+pinned VS Code version configured by the test runner. On headless Linux, use:
 
 ```sh
 xvfb-run -a npm run test:integration
 ```
+
+Pull requests and pushes to `main` run the same locked install, lint,
+typecheck, unit-test, and build gates in GitHub Actions. A separate Linux job
+runs the Extension Host suite under `xvfb-run`, so editor integration failures
+remain distinct from the fast language-engine checks. Superseded runs on the
+same branch are cancelled automatically.
 
 Open the repository in VS Code and run the **Run Extension** launch
 configuration for manual development. The **Run Extension Integration Tests**

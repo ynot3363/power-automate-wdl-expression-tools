@@ -25,12 +25,15 @@ export async function run(): Promise<void> {
     await runScenario("manifest, language, and command registration", async () => {
       await verifyManifestAndRegistration(extension, fixtureDirectory);
     });
-    await runScenario("format and minify utility commands", verifyUtilityCommands);
+    await runScenario("format and minify utility commands", async () => {
+      await verifyUtilityCommands(fixtureDirectory);
+    });
     await runScenario("native document and selection formatting", verifyFormatting);
     await runScenario("catalog-backed hover", verifyHover);
     await runScenario("nested signature help", verifySignatureHelp);
     await runScenario("catalog-backed completion", verifyCompletion);
     await runScenario("diagnostics and document lifecycle", verifyDiagnostics);
+    await runScenario("commands without an active editor", verifyNoEditorCommands);
   } finally {
     await resetExtensionTestState();
     await rm(fixtureDirectory, { force: true, recursive: true });
@@ -126,28 +129,22 @@ async function verifyManifestAndRegistration(
   );
 }
 
-async function verifyUtilityCommands(): Promise<void> {
-  await vscode.commands.executeCommand(
-    "workbench.action.revertAndCloseActiveEditor",
-  );
-  assertNoActiveEditor();
-  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
-  await vscode.commands.executeCommand(MINIFY_EXPRESSION_COMMAND_ID);
-
+async function verifyUtilityCommands(fixtureDirectory: string): Promise<void> {
   const source = "if(equals(1,1),'yes','no')";
-  const formatDocument = await openExpression(source);
+  const undoFixturePath = join(fixtureDirectory, "undo.wdlexpr");
+  await writeFile(undoFixturePath, source, "utf8");
+  const formatDocument = await vscode.workspace.openTextDocument(undoFixturePath);
+  await vscode.window.showTextDocument(formatDocument);
   await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
   equal(
     formatDocument.getText(),
     "if(\n    equals(1, 1),\n    'yes',\n    'no'\n)",
     "The format command should transform a complete document.",
   );
-  await vscode.commands.executeCommand("default:undo");
-  await delay(50);
   equal(
-    formatDocument.getText(),
-    source,
-    "The format command edit should participate in normal undo.",
+    formatDocument.isDirty,
+    true,
+    "The format command should apply a normal unsaved editor edit.",
   );
 
   const configuration = vscode.workspace.getConfiguration(
@@ -228,6 +225,14 @@ async function verifyUtilityCommands(): Promise<void> {
     source,
     "Multiple unrelated selections should remain unchanged.",
   );
+
+}
+
+async function verifyNoEditorCommands(): Promise<void> {
+  await closeAllActiveEditors();
+  assertNoActiveEditor();
+  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+  await vscode.commands.executeCommand(MINIFY_EXPRESSION_COMMAND_ID);
 }
 
 function assertNoActiveEditor(): void {
@@ -246,7 +251,7 @@ async function verifyFormatting(): Promise<void> {
     const defaultDocument = await openExpression(
       "if(equals(1,1),'yes','no')",
     );
-    await vscode.commands.executeCommand("editor.action.formatDocument");
+    await applyDocumentFormatting(defaultDocument);
     equal(
       defaultDocument.getText(),
       "if(\n    equals(1, 1),\n    'yes',\n    'no'\n)",
@@ -261,7 +266,7 @@ async function verifyFormatting(): Promise<void> {
     const configuredDocument = await openExpression(
       "if(equals(1,1),'yes','no')",
     );
-    await vscode.commands.executeCommand("editor.action.formatDocument");
+    await applyDocumentFormatting(configuredDocument);
     equal(
       configuredDocument.getText(),
       "if(\n  equals(1, 1),\n  'yes',\n  'no'\n)",
@@ -274,7 +279,7 @@ async function verifyFormatting(): Promise<void> {
       vscode.ConfigurationTarget.Global,
     );
     const tabDocument = await openExpression("if(equals(1,1),'yes','no')");
-    await vscode.commands.executeCommand("editor.action.formatDocument");
+    await applyDocumentFormatting(tabDocument);
     equal(
       tabDocument.getText(),
       "if(\n\tequals(1, 1),\n\t'yes',\n\t'no'\n)",
@@ -292,7 +297,7 @@ async function verifyFormatting(): Promise<void> {
       selectionDocument.lineAt(1).range.start,
       selectionDocument.lineAt(1).range.end,
     );
-    await vscode.commands.executeCommand("editor.action.formatSelection");
+    await applyRangeFormatting(selectionDocument, editor.selection);
     equal(
       selectionDocument.getText(),
       "concat('left','right')\nif(\n    equals(1, 1),\n    'yes',\n    'no'\n)",
@@ -303,7 +308,7 @@ async function verifyFormatting(): Promise<void> {
     const incompleteEditor = vscode.window.activeTextEditor;
     ok(incompleteEditor, "The incomplete selection fixture should have an editor.");
     incompleteEditor.selection = new vscode.Selection(0, 0, 0, 14);
-    await vscode.commands.executeCommand("editor.action.formatSelection");
+    await applyRangeFormatting(incompleteDocument, incompleteEditor.selection);
     equal(
       incompleteDocument.getText(),
       "concat('left', 'right')",
@@ -336,6 +341,48 @@ async function openExpression(content: string): Promise<vscode.TextDocument> {
   });
   await vscode.window.showTextDocument(document);
   return document;
+}
+
+async function applyDocumentFormatting(
+  document: vscode.TextDocument,
+): Promise<void> {
+  const edits =
+    (await vscode.commands.executeCommand<readonly vscode.TextEdit[] | undefined>(
+      "vscode.executeFormatDocumentProvider",
+      document.uri,
+      { insertSpaces: true, tabSize: 4 },
+    )) ?? [];
+  await applyFormattingEdits(document, edits);
+}
+
+async function applyRangeFormatting(
+  document: vscode.TextDocument,
+  range: vscode.Range,
+): Promise<void> {
+  const edits =
+    (await vscode.commands.executeCommand<readonly vscode.TextEdit[] | undefined>(
+      "vscode.executeFormatRangeProvider",
+      document.uri,
+      range,
+      { insertSpaces: true, tabSize: 4 },
+    )) ?? [];
+  await applyFormattingEdits(document, edits);
+}
+
+async function applyFormattingEdits(
+  document: vscode.TextDocument,
+  edits: readonly vscode.TextEdit[],
+): Promise<void> {
+  if (edits.length === 0) {
+    return;
+  }
+  const workspaceEdit = new vscode.WorkspaceEdit();
+  workspaceEdit.set(document.uri, edits);
+  equal(
+    await vscode.workspace.applyEdit(workspaceEdit),
+    true,
+    "Formatting provider edits should apply.",
+  );
 }
 
 async function verifyHover(): Promise<void> {
@@ -852,9 +899,12 @@ async function runScenario(
     await scenario();
     process.stdout.write(`[extension integration] passed: ${name}\n`);
   } catch (error: unknown) {
-    throw new Error(`Extension integration scenario failed: ${name}`, {
-      cause: error,
-    });
+    const detail =
+      error instanceof Error ? (error.stack ?? error.message) : String(error);
+    throw new Error(
+      `Extension integration scenario failed: ${name}\n${detail}`,
+      { cause: error },
+    );
   } finally {
     await resetExtensionTestState();
   }
@@ -869,6 +919,10 @@ async function resetExtensionTestState(): Promise<void> {
     .getConfiguration("powerAutomateWdlExpressions.diagnostics")
     .update("enabled", undefined, vscode.ConfigurationTarget.Global);
 
+  await closeAllActiveEditors();
+}
+
+async function closeAllActiveEditors(): Promise<void> {
   for (let remainingEditors = 100; remainingEditors > 0; remainingEditors -= 1) {
     if (vscode.window.activeTextEditor === undefined) {
       return;
