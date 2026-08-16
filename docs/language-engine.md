@@ -108,3 +108,17 @@ Catalog lookup and prefix matching are case-insensitive and return definitions
 in deterministic name order. Add or review catalog JSON with the same care as
 TypeScript: include focused validation tests, authoritative documentation URLs,
 and provenance notes when the actual dataset is introduced.
+
+## Document Analysis Ownership
+
+The extension creates one `DocumentAnalysisService` during activation and
+shares it across formatting, utility commands, hover, signature help,
+completion, and diagnostics. Complete-document analysis is cached by document
+URI and version. Source text is also compared as a defensive invariant, so a
+result can never cross a URI, version, or source boundary.
+
+Version changes replace the prior URI entry. Closing a document, changing away
+from the WDL expression language, or disposing the extension releases cached
+state. Selection-only text is analyzed directly and is intentionally not added
+to the document cache. The service does not persist between sessions, parse
+incrementally, use background workers, or implement an LSP.

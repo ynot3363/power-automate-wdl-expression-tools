@@ -2,9 +2,10 @@
   "name": "power-automate-wdl-expression-tools",
   "displayName": "Power Automate WDL Expression Tools",
   "description": "Edit and validate Microsoft Power Automate WDL expressions in Visual Studio Code.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "publisher": "aepcodes",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-only",
+  "icon": "assets/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/ynot3363/power-automate-wdl-expression-tools.git"
@@ -12,12 +13,26 @@
   "bugs": {
     "url": "https://github.com/ynot3363/power-automate-wdl-expression-tools/issues"
   },
+  "homepage": "https://github.com/ynot3363/power-automate-wdl-expression-tools#readme",
   "engines": {
     "vscode": "^1.125.0"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Formatters",
+    "Linters"
   ],
+  "keywords": [
+    "power-automate",
+    "logic-apps",
+    "wdl",
+    "expressions",
+    "workflow"
+  ],
+  "galleryBanner": {
+    "color": "#18364a",
+    "theme": "dark"
+  },
   "contributes": {
     "configuration": {
       "title": "Power Automate WDL Expressions",
@@ -47,6 +62,16 @@
       {
         "command": "powerAutomateWdlExpressions.newExpression",
         "title": "Power Automate: New WDL Expression"
+      },
+      {
+        "command": "powerAutomateWdlExpressions.formatExpression",
+        "title": "Power Automate: Format WDL Expression",
+        "enablement": "editorLangId == power-automate-wdl-expression"
+      },
+      {
+        "command": "powerAutomateWdlExpressions.minifyExpression",
+        "title": "Power Automate: Minify WDL Expression",
+        "enablement": "editorLangId == power-automate-wdl-expression"
       }
     ],
     "languages": [
@@ -70,10 +95,6 @@
     ]
   },
   "main": "./dist/extension.js",
-  "files": [
-    "dist",
-    "README.md"
-  ],
   "scripts": {
     "build": "npm run build:extension && npm run build:tests",
     "build:extension": "esbuild src/extension/extension.ts --bundle --external:vscode --format=cjs --platform=node --target=node20 --outfile=dist/extension.js",
@@ -84,17 +105,22 @@
     "formatter:update": "tsx scripts/updateFormatterGoldens.ts",
     "inspect:ast": "tsx scripts/printAst.ts",
     "lint": "eslint .",
+    "package:verify": "tsx scripts/verifyVsix.ts",
+    "package:vsix": "vsce package",
     "test": "npm run test:unit",
+    "test:all": "npm run validate && npm run test:integration",
     "test:integration": "npm run build && node out/test/extension/runTest.js",
     "test:unit": "vitest run test/unit",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run lint && npm run typecheck && npm run test:unit && npm run build"
+    "validate": "npm run lint && npm run typecheck && npm run test:unit && npm run build",
+    "vscode:prepublish": "npm run build"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@types/node": "24.13.3",
     "@types/vscode": "1.125.0",
     "@vscode/test-electron": "3.1.0",
+    "@vscode/vsce": "3.9.2",
     "esbuild": "0.28.2",
     "eslint": "10.0.1",
     "tsx": "^4.23.12",

@@ -1,9 +1,10 @@
 import type { WdlFunctionDefinition } from "./functionDefinition";
+import { microsoftFunctionDefinitions } from "./microsoftFunctionDefinitions";
 
 const referenceUrl =
   "https://learn.microsoft.com/en-us/azure/logic-apps/expression-functions-reference";
 
-export const initialFunctionDefinitions = [
+const curatedFunctionDefinitions = [
   {
     name: "body",
     category: "Workflow",
@@ -477,3 +478,8 @@ export const initialFunctionDefinitions = [
     documentationUrl: `${referenceUrl}#variables`,
   },
 ] as const satisfies readonly WdlFunctionDefinition[];
+
+export const initialFunctionDefinitions = [
+  ...curatedFunctionDefinitions,
+  ...microsoftFunctionDefinitions,
+] satisfies readonly WdlFunctionDefinition[];

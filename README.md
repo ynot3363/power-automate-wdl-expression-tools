@@ -1,109 +1,175 @@
 # Power Automate WDL Expression Tools
 
-Power Automate WDL Expression Tools is a Visual Studio Code extension for
-editing standalone Microsoft Power Automate and Logic Apps Workflow Definition
-Language (WDL) expressions.
+[![Validation](https://github.com/ynot3363/power-automate-wdl-expression-tools/actions/workflows/validation.yml/badge.svg)](https://github.com/ynot3363/power-automate-wdl-expression-tools/actions/workflows/validation.yml)
 
-The project is in early development. The current scaffold establishes the
-strict TypeScript, validation, and Extension Development Host foundations used
-by the numbered implementation stories in GitHub.
+Write, understand, validate, and reformat standalone Microsoft Power Automate
+and Azure Logic Apps Workflow Definition Language (WDL) expressions without
+leaving Visual Studio Code.
 
-## Getting Started
+This extension adds a dedicated `.wdlexpr` language mode with syntax
+highlighting, AST-aware formatting and minification, function help,
+completion, signature help, and conservative diagnostics.
 
-Create a file with the canonical `.wdlexpr` extension. VS Code automatically
-selects the `Power Automate WDL Expression` language mode.
+## Quick start
 
-For a temporary scratch document, open the Command Palette and run:
+1. Install **Power Automate WDL Expression Tools** in Visual Studio Code.
+2. Create a file whose name ends in `.wdlexpr`.
+3. Paste or write one Power Automate or Logic Apps expression.
 
-```text
-Power Automate: New WDL Expression
+For an unsaved scratch expression, open the Command Palette and run
+**Power Automate: New WDL Expression**.
+
+```wdl
+if(equals(toLower(variables('Status')),'approved'),concat('Hello, ',trim(variables('Name'))),'Pending')
 ```
 
-The command opens an untitled editor in the same language mode. The extension
-does not register `.wdl` or `.paexpr` files.
+Run **Format Document** or **Power Automate: Format WDL Expression** to produce:
 
-## Editing Support
+```wdl
+if(
+    equals(
+        toLower(
+            variables('Status')
+        ),
+        'approved'
+    ),
+    concat(
+        'Hello, ',
+        trim(
+            variables('Name')
+        )
+    ),
+    'Pending'
+)
+```
 
-The WDL language mode auto-closes and matches parentheses and brackets and
-auto-closes single quotes. Syntax highlighting follows the active VS Code theme
-for generic function calls, WDL strings (including doubled-apostrophe escapes),
-numbers, boolean and null literals, delimiters, and property/index access.
+Run **Power Automate: Minify WDL Expression** to return to a compact form.
 
-Function names are highlighted syntactically. Catalog-backed function validity
-and semantic analysis are delivered by later implementation stories.
+## Features
 
-### Formatting
+- Dedicated `.wdlexpr` files and `Power Automate WDL Expression` language mode
+- Theme-aware syntax highlighting for calls, literals, access chains, and
+  delimiters
+- Document and safe-selection formatting driven by the parsed expression tree
+- AST-aware minification that preserves WDL string escaping
+- Hover documentation for all 137 functions in Microsoft's workflow expression
+  function reference
+- Function completion with snippet tab stops
+- Signature help that follows nested and incomplete calls
+- Problems-panel diagnostics for syntax, unknown functions, argument counts,
+  and provable argument-type errors
+- Cached document analysis shared by editor providers
 
-Use VS Code's **Format Document** command to format a complete expression, or
-select one complete expression and run **Format Selection**. Unsafe partial or
-incomplete selections are left unchanged.
+Function metadata ships with the extension. Hover and completion do not fetch
+documentation while you edit.
 
-Formatting uses four spaces by default. Configure
-`powerAutomateWdlExpressions.format.indentSize` to change the indentation width
-or set `powerAutomateWdlExpressions.format.useTabs` to `true` to indent with
-tabs. Both settings can be scoped to a workspace, folder, or language.
+## Commands
 
-### Function help
+| Command | What it does |
+| --- | --- |
+| `Power Automate: New WDL Expression` | Opens an untitled WDL expression editor. |
+| `Power Automate: Format WDL Expression` | Formats the single non-empty selection, or the full document. |
+| `Power Automate: Minify WDL Expression` | Minifies the single non-empty selection, or the full document. |
 
-Hover over a recognized function name to see its catalog-backed signatures,
-parameters, return types, examples, and a link to the Microsoft reference. The
-catalog is stored with the extension and does not fetch remote documentation or
-know the actions, variables, or schemas in a particular flow.
+The format and minify commands only change `Power Automate WDL Expression`
+editors. Incomplete or unsafe input is left unchanged and VS Code displays an
+explanation.
 
-Signature help opens after `(` and `,` and tracks the active argument for known
-functions, including nested and incomplete calls. Signatures describe catalog
-types only; they cannot suggest values from a particular flow or connector.
+VS Code's standard **Format Document** and **Format Selection** commands are
+also supported. A selection must contain one complete expression.
 
-Function completion filters the built-in catalog as you type and inserts calls
-as snippets with ordered parameter tab stops. Completion covers function names
-only; it does not suggest variables, actions, triggers, connectors, or other
-runtime values from a flow.
+## Settings
 
-### Diagnostics
+| Setting | Default | Description |
+| --- | --- | --- |
+| `powerAutomateWdlExpressions.format.indentSize` | `4` | Spaces per indentation level. |
+| `powerAutomateWdlExpressions.format.useTabs` | `false` | Indent with tabs instead of spaces. |
+| `powerAutomateWdlExpressions.diagnostics.enabled` | `true` | Publish WDL syntax and static semantic diagnostics. |
 
-Syntax errors, unknown functions, argument-count errors, and provable argument-
-type errors appear in VS Code's Problems panel with stable `WDL1000`, `WDL1100`,
-`WDL1200`, and `WDL1300` code families. Changes are analyzed after a 200 ms
-debounce. Set `powerAutomateWdlExpressions.diagnostics.enabled` to `false` to
-disable and clear these diagnostics for an applicable resource.
+All settings are resource-scoped, so they can be configured for a user,
+workspace, folder, or language.
 
-Analysis is intentionally conservative: values obtained from flow variables,
-actions, triggers, properties, and other runtime context remain unknown and do
-not produce speculative type errors. The extension does not provide quick
-fixes or flow-aware validation.
+## Diagnostics
 
-## Prerequisites
+Diagnostics use stable code families:
 
-- Node.js 24 or another Node.js version supported by the package toolchain
-- npm 11 or a compatible npm release
+| Code family | Meaning |
+| --- | --- |
+| `WDL1000` | Syntax error |
+| `WDL1100` | Unknown function |
+| `WDL1200` | Invalid argument count |
+| `WDL1300` | Provably incompatible argument type |
+
+Analysis is intentionally conservative. Runtime values from flow variables,
+actions, triggers, properties, and connectors remain unknown rather than
+producing speculative errors.
+
+## Current limitations
+
+- A `.wdlexpr` file contains one standalone expression; this is not a complete
+  flow-definition editor.
+- The extension does not connect to Power Platform, inspect a flow, or discover
+  action, variable, trigger, or connector schemas.
+- The bundled catalog follows Microsoft's workflow expression function reference;
+  availability can still vary by Power Automate or Logic Apps environment.
+- No `.wdl` file association is registered, to avoid claiming unrelated WDL
+  formats.
+- Diagnostics are static editor guidance, not a substitute for validating and
+  running the expression in its target flow.
+
+## Requirements
+
 - Visual Studio Code 1.125 or newer
+- No Power Platform sign-in is required
 
 ## Development
 
-Install dependencies and validate the repository:
+Install dependencies and run the fast repository checks:
 
 ```sh
-npm install
+npm ci
 npm run validate
 ```
 
-Run the extension integration test separately:
+Run the Extension Host suite separately, or run every local quality gate:
 
 ```sh
 npm run test:integration
+npm run test:all
 ```
 
-To launch the extension manually, open the repository in VS Code and run the
-`Run Extension` launch configuration. This starts an Extension Development
-Host with the local build loaded.
+The integration suite launches a clean VS Code host and reports a named
+scenario for language registration, commands, formatting, hover, signature
+help, completion, and diagnostic lifecycle behavior. It runs against the
+pinned VS Code version configured by the test runner. On headless Linux, use:
 
-## Architecture
+```sh
+xvfb-run -a npm run test:integration
+```
 
-- `src/language` contains the reusable WDL expression engine and never imports
-  `vscode`.
-- `src/extension` contains VS Code commands, providers, diagnostics adapters,
-  and other editor integration.
+Pull requests and pushes to `main` run the same locked install, lint,
+typecheck, unit-test, and build gates in GitHub Actions. A separate Linux job
+runs the Extension Host suite under `xvfb-run`, so editor integration failures
+remain distinct from the fast language-engine checks. Superseded runs on the
+same branch are cancelled automatically.
 
-Parsing, formatting, type analysis, function metadata, and diagnostics belong
-to the language engine. The extension layer adapts those results to native VS
-Code APIs.
+Open the repository in VS Code and run the **Run Extension** launch
+configuration for manual development. The **Run Extension Integration Tests**
+launch configuration supports interactive test debugging.
+
+The reusable engine lives under `src/language` and never imports `vscode`.
+Editor commands, providers, diagnostics, and lifecycle adapters live under
+`src/extension`. See [Language engine](docs/language-engine.md) for the detailed
+boundary.
+
+## Privacy
+
+Expression source is analyzed locally. The extension does not send documents
+to a remote service and does not include telemetry.
+
+## Feedback and license
+
+Report defects and feature requests in the
+[GitHub issue tracker](https://github.com/ynot3363/power-automate-wdl-expression-tools/issues).
+
+Licensed under the [GNU Affero General Public License v3.0](LICENSE).

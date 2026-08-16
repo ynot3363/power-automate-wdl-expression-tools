@@ -1,8 +1,9 @@
 # Function catalog
 
-The initial WDL function catalog is maintained in
-`src/language/functions/initialFunctionDefinitions.ts`. The editor-independent
-`wdlFunctionCatalog` singleton loads and validates that source at startup.
+The WDL function catalog is maintained in
+`src/language/functions/initialFunctionDefinitions.ts` and
+`src/language/functions/microsoftFunctionDefinitions.ts`. The editor-independent
+`wdlFunctionCatalog` singleton combines and validates those sources at startup.
 
 ## Provenance
 
@@ -10,11 +11,19 @@ The initial WDL function catalog is maintained in
 - Applies to: Power Automate cloud flows and Azure Logic Apps
 - Reviewed: 2026-08-16
 
-The initial scope favors common Power Automate expressions. It includes the
-functions named by the implementation plan and at least one definition in every
-planned category. Later catalog stories can expand coverage without changing
-the catalog API.
+The catalog covers all 137 functions in the Microsoft reference reviewed above,
+including the documented deprecated aliases `decodeBase64` and `parse`. The
+`microsoftFunctionReferenceNames` snapshot is asserted against the loaded
+catalog in unit tests so missing or extra names fail validation.
+
+Signatures and return types are intentionally conservative where workflow data
+is only known at runtime. The catalog powers function recognition, completion,
+signature help, hover documentation, and static argument diagnostics without
+making network requests while the editor is open.
 
 Function names are matched case-insensitively because WDL expression function
 names are case-insensitive. String values and property names remain
 case-sensitive.
+
+When Microsoft changes the reference, update the definitions and the reference
+name snapshot together, then advance the reviewed date above.

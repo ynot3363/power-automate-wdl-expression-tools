@@ -8,6 +8,10 @@ const EXTENSION_ID = "aepcodes.power-automate-wdl-expression-tools";
 const LANGUAGE_ID = "power-automate-wdl-expression";
 const NEW_EXPRESSION_COMMAND_ID =
   "powerAutomateWdlExpressions.newExpression";
+const FORMAT_EXPRESSION_COMMAND_ID =
+  "powerAutomateWdlExpressions.formatExpression";
+const MINIFY_EXPRESSION_COMMAND_ID =
+  "powerAutomateWdlExpressions.minifyExpression";
 
 export async function run(): Promise<void> {
   const extension = vscode.extensions.getExtension(EXTENSION_ID);
@@ -15,6 +19,37 @@ export async function run(): Promise<void> {
   ok(extension, "The extension should be discoverable in the host.");
   await extension.activate();
   equal(extension.isActive, true, "The extension should activate.");
+
+  const fixtureDirectory = await mkdtemp(join(tmpdir(), "wdlexpr-test-"));
+  try {
+    await runScenario("manifest, language, and command registration", async () => {
+      await verifyManifestAndRegistration(extension, fixtureDirectory);
+    });
+    await runScenario("format and minify utility commands", async () => {
+      await verifyUtilityCommands(fixtureDirectory);
+    });
+    await runScenario("native document and selection formatting", verifyFormatting);
+    await runScenario("catalog-backed hover", verifyHover);
+    await runScenario("nested signature help", verifySignatureHelp);
+    await runScenario("catalog-backed completion", verifyCompletion);
+    await runScenario("diagnostics and document lifecycle", verifyDiagnostics);
+    await runScenario("commands without an active editor", verifyNoEditorCommands);
+  } finally {
+    await resetExtensionTestState();
+    await rm(fixtureDirectory, { force: true, recursive: true });
+  }
+
+  equal(
+    vscode.window.activeTextEditor,
+    undefined,
+    "The integration suite should leave no active editor state.",
+  );
+}
+
+async function verifyManifestAndRegistration(
+  extension: vscode.Extension<unknown>,
+  fixtureDirectory: string,
+): Promise<void> {
 
   const packageJson = extension.packageJSON as {
     contributes?: {
@@ -65,38 +100,147 @@ export async function run(): Promise<void> {
     commands.includes(NEW_EXPRESSION_COMMAND_ID),
     "The new-expression command should be registered.",
   );
+  ok(
+    commands.includes(FORMAT_EXPRESSION_COMMAND_ID),
+    "The format-expression command should be registered.",
+  );
+  ok(
+    commands.includes(MINIFY_EXPRESSION_COMMAND_ID),
+    "The minify-expression command should be registered.",
+  );
 
-  const fixtureDirectory = await mkdtemp(join(tmpdir(), "wdlexpr-test-"));
   const fixturePath = join(fixtureDirectory, "automatic.wdlexpr");
+  await writeFile(fixturePath, "concat('Hello', 'World')", "utf8");
+  const fileDocument = await vscode.workspace.openTextDocument(fixturePath);
+  equal(
+    fileDocument.languageId,
+    LANGUAGE_ID,
+    ".wdlexpr files should select the WDL language automatically.",
+  );
 
+  await vscode.commands.executeCommand(NEW_EXPRESSION_COMMAND_ID);
+  const activeDocument = vscode.window.activeTextEditor?.document;
+  ok(activeDocument, "The command should open an editor.");
+  equal(activeDocument.isUntitled, true, "The new document should be untitled.");
+  equal(
+    activeDocument.languageId,
+    LANGUAGE_ID,
+    "The new document should use the WDL language.",
+  );
+}
+
+async function verifyUtilityCommands(fixtureDirectory: string): Promise<void> {
+  const source = "if(equals(1,1),'yes','no')";
+  const undoFixturePath = join(fixtureDirectory, "undo.wdlexpr");
+  await writeFile(undoFixturePath, source, "utf8");
+  const formatDocument = await vscode.workspace.openTextDocument(undoFixturePath);
+  await vscode.window.showTextDocument(formatDocument);
+  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+  equal(
+    formatDocument.getText(),
+    "if(\n    equals(1, 1),\n    'yes',\n    'no'\n)",
+    "The format command should transform a complete document.",
+  );
+  equal(
+    formatDocument.isDirty,
+    true,
+    "The format command should apply a normal unsaved editor edit.",
+  );
+
+  const configuration = vscode.workspace.getConfiguration(
+    "powerAutomateWdlExpressions.format",
+  );
   try {
-    await writeFile(fixturePath, "concat('Hello', 'World')", "utf8");
-    const fileDocument = await vscode.workspace.openTextDocument(fixturePath);
-    equal(
-      fileDocument.languageId,
-      LANGUAGE_ID,
-      ".wdlexpr files should select the WDL language automatically.",
+    await configuration.update(
+      "indentSize",
+      2,
+      vscode.ConfigurationTarget.Global,
     );
-
-    await vscode.commands.executeCommand(NEW_EXPRESSION_COMMAND_ID);
-    const activeDocument = vscode.window.activeTextEditor?.document;
-    ok(activeDocument, "The command should open an editor.");
-    equal(activeDocument.isUntitled, true, "The new document should be untitled.");
+    await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
     equal(
-      activeDocument.languageId,
-      LANGUAGE_ID,
-      "The new document should use the WDL language.",
+      formatDocument.getText(),
+      "if(\n  equals(1, 1),\n  'yes',\n  'no'\n)",
+      "The format command should share configured provider indentation.",
     );
-
-    await verifyFormatting();
-    await verifyHover();
-    await verifySignatureHelp();
-    await verifyCompletion();
-    await verifyDiagnostics();
   } finally {
-    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
-    await rm(fixtureDirectory, { force: true, recursive: true });
+    await resetFormattingConfiguration(configuration);
   }
+
+  const selectionDocument = await openExpression(
+    "concat('left','right')\nif(equals(1,1),'yes','no')",
+  );
+  const selectionEditor = vscode.window.activeTextEditor;
+  ok(selectionEditor, "The selection command fixture should have an editor.");
+  selectionEditor.selection = new vscode.Selection(
+    selectionDocument.lineAt(1).range.start,
+    selectionDocument.lineAt(1).range.end,
+  );
+  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+  equal(
+    selectionDocument.getText(),
+    "concat('left','right')\nif(\n    equals(1, 1),\n    'yes',\n    'no'\n)",
+    "The format command should transform only the selected expression.",
+  );
+
+  const multiline =
+    "if(\n    equals(\n        variables('Name'),\n        ''\n    ),\n    'Unknown',\n    variables('Name')\n)";
+  const minifyDocument = await openExpression(multiline);
+  await vscode.commands.executeCommand(MINIFY_EXPRESSION_COMMAND_ID);
+  equal(
+    minifyDocument.getText(),
+    "if(equals(variables('Name'),''),'Unknown',variables('Name'))",
+    "The minify command should use compact AST output.",
+  );
+
+  const incompleteDocument = await openExpression("concat('value',");
+  await vscode.commands.executeCommand(MINIFY_EXPRESSION_COMMAND_ID);
+  equal(
+    incompleteDocument.getText(),
+    "concat('value',",
+    "Unsafe incomplete input should remain unchanged.",
+  );
+
+  const unsupportedDocument = await vscode.workspace.openTextDocument({
+    language: "plaintext",
+    content: "if(equals(1,1),'yes','no')",
+  });
+  await vscode.window.showTextDocument(unsupportedDocument);
+  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+  equal(
+    unsupportedDocument.getText(),
+    "if(equals(1,1),'yes','no')",
+    "Unsupported language documents should remain unchanged.",
+  );
+
+  const multiSelectionDocument = await openExpression(source);
+  const multiSelectionEditor = vscode.window.activeTextEditor;
+  ok(multiSelectionEditor, "The multi-selection fixture should have an editor.");
+  multiSelectionEditor.selections = [
+    new vscode.Selection(0, 0, 0, 0),
+    new vscode.Selection(0, 3, 0, 3),
+  ];
+  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+  equal(
+    multiSelectionDocument.getText(),
+    source,
+    "Multiple unrelated selections should remain unchanged.",
+  );
+
+}
+
+async function verifyNoEditorCommands(): Promise<void> {
+  await closeAllActiveEditors();
+  assertNoActiveEditor();
+  await vscode.commands.executeCommand(FORMAT_EXPRESSION_COMMAND_ID);
+  await vscode.commands.executeCommand(MINIFY_EXPRESSION_COMMAND_ID);
+}
+
+function assertNoActiveEditor(): void {
+  equal(
+    vscode.window.activeTextEditor,
+    undefined,
+    "The no-editor command fixture should start without an active editor.",
+  );
 }
 
 async function verifyFormatting(): Promise<void> {
@@ -107,7 +251,7 @@ async function verifyFormatting(): Promise<void> {
     const defaultDocument = await openExpression(
       "if(equals(1,1),'yes','no')",
     );
-    await vscode.commands.executeCommand("editor.action.formatDocument");
+    await applyDocumentFormatting(defaultDocument);
     equal(
       defaultDocument.getText(),
       "if(\n    equals(1, 1),\n    'yes',\n    'no'\n)",
@@ -122,7 +266,7 @@ async function verifyFormatting(): Promise<void> {
     const configuredDocument = await openExpression(
       "if(equals(1,1),'yes','no')",
     );
-    await vscode.commands.executeCommand("editor.action.formatDocument");
+    await applyDocumentFormatting(configuredDocument);
     equal(
       configuredDocument.getText(),
       "if(\n  equals(1, 1),\n  'yes',\n  'no'\n)",
@@ -135,7 +279,7 @@ async function verifyFormatting(): Promise<void> {
       vscode.ConfigurationTarget.Global,
     );
     const tabDocument = await openExpression("if(equals(1,1),'yes','no')");
-    await vscode.commands.executeCommand("editor.action.formatDocument");
+    await applyDocumentFormatting(tabDocument);
     equal(
       tabDocument.getText(),
       "if(\n\tequals(1, 1),\n\t'yes',\n\t'no'\n)",
@@ -153,7 +297,7 @@ async function verifyFormatting(): Promise<void> {
       selectionDocument.lineAt(1).range.start,
       selectionDocument.lineAt(1).range.end,
     );
-    await vscode.commands.executeCommand("editor.action.formatSelection");
+    await applyRangeFormatting(selectionDocument, editor.selection);
     equal(
       selectionDocument.getText(),
       "concat('left','right')\nif(\n    equals(1, 1),\n    'yes',\n    'no'\n)",
@@ -164,7 +308,7 @@ async function verifyFormatting(): Promise<void> {
     const incompleteEditor = vscode.window.activeTextEditor;
     ok(incompleteEditor, "The incomplete selection fixture should have an editor.");
     incompleteEditor.selection = new vscode.Selection(0, 0, 0, 14);
-    await vscode.commands.executeCommand("editor.action.formatSelection");
+    await applyRangeFormatting(incompleteDocument, incompleteEditor.selection);
     equal(
       incompleteDocument.getText(),
       "concat('left', 'right')",
@@ -199,6 +343,48 @@ async function openExpression(content: string): Promise<vscode.TextDocument> {
   return document;
 }
 
+async function applyDocumentFormatting(
+  document: vscode.TextDocument,
+): Promise<void> {
+  const edits =
+    (await vscode.commands.executeCommand<readonly vscode.TextEdit[] | undefined>(
+      "vscode.executeFormatDocumentProvider",
+      document.uri,
+      { insertSpaces: true, tabSize: 4 },
+    )) ?? [];
+  await applyFormattingEdits(document, edits);
+}
+
+async function applyRangeFormatting(
+  document: vscode.TextDocument,
+  range: vscode.Range,
+): Promise<void> {
+  const edits =
+    (await vscode.commands.executeCommand<readonly vscode.TextEdit[] | undefined>(
+      "vscode.executeFormatRangeProvider",
+      document.uri,
+      range,
+      { insertSpaces: true, tabSize: 4 },
+    )) ?? [];
+  await applyFormattingEdits(document, edits);
+}
+
+async function applyFormattingEdits(
+  document: vscode.TextDocument,
+  edits: readonly vscode.TextEdit[],
+): Promise<void> {
+  if (edits.length === 0) {
+    return;
+  }
+  const workspaceEdit = new vscode.WorkspaceEdit();
+  workspaceEdit.set(document.uri, edits);
+  equal(
+    await vscode.workspace.applyEdit(workspaceEdit),
+    true,
+    "Formatting provider edits should apply.",
+  );
+}
+
 async function verifyHover(): Promise<void> {
   const knownDocument = await openExpression("concat('left', 'right')");
   const knownHovers = await executeHovers(knownDocument, new vscode.Position(0, 1));
@@ -206,10 +392,24 @@ async function verifyHover(): Promise<void> {
   const knownMarkdown = hoverMarkdown(knownHovers[0]);
   ok(knownMarkdown.includes("concat("), "Hover should include the signature.");
   ok(
+    knownMarkdown.includes("```power-automate-wdl-expression"),
+    "Hover code blocks should use the registered language for theme-aware highlighting.",
+  );
+  ok(
+    knownMarkdown.includes("$(symbol-function)"),
+    "Hover should include a theme-aware function icon.",
+  );
+  ok(
+    knownMarkdown.includes("String") && knownMarkdown.includes("function"),
+    `Hover should include the category. Rendered: ${knownMarkdown}`,
+  );
+  ok(
     knownMarkdown.includes("Combines"),
     `Hover should include the description. Rendered: ${knownMarkdown}`,
   );
   ok(knownMarkdown.includes("additionalText"), "Hover should include parameter help.");
+  ok(knownMarkdown.includes("| Name | Type | Requirement | Description |"));
+  ok(knownMarkdown.includes("Required, repeatable"));
   ok(knownMarkdown.includes("Returns"), "Hover should include the return type.");
   ok(knownMarkdown.includes("Hello world"), "Hover should include an example result.");
   ok(knownMarkdown.includes("learn.microsoft.com"), "Hover should link to Microsoft documentation.");
@@ -218,6 +418,21 @@ async function verifyHover(): Promise<void> {
       content instanceof vscode.MarkdownString,
   );
   equal(markdownContent?.isTrusted, false, "Hover Markdown must not be trusted.");
+  equal(
+    markdownContent.supportThemeIcons,
+    true,
+    "Hover Markdown should support theme-aware icons.",
+  );
+  equal(markdownContent.supportHtml, false, "Hover Markdown must not render HTML.");
+
+  const deprecatedDocument = await openExpression("parse('value')");
+  const deprecatedMarkdown = hoverMarkdown(
+    (await executeHovers(deprecatedDocument, new vscode.Position(0, 1)))[0],
+  );
+  ok(
+    deprecatedMarkdown.includes("$(warning) **Deprecated**"),
+    "Deprecated functions should display a prominent warning.",
+  );
 
   const nestedDocument = await openExpression(
     "if(equals(1, 1), toLower('YES'), 'no')",
@@ -434,6 +649,16 @@ async function verifyCompletion(): Promise<void> {
     completionSnippet(concatItem),
     "concat(${1:text}, ${2:additionalText})$0",
     "Variadic signatures should insert one predictable variadic placeholder.",
+  );
+
+  const addPropertyItem = (
+    await executeCompletion(await openExpression("addP"), new vscode.Position(0, 4))
+  ).find((item) => completionLabel(item) === "addProperty");
+  ok(addPropertyItem, "Expected an addProperty completion item.");
+  equal(
+    completionSnippet(addPropertyItem),
+    "addProperty(${1:object}, ${2:property}, ${3:value})$0",
+    "addProperty should insert all three required arguments.",
   );
 
   const firstItem = (
@@ -702,4 +927,49 @@ async function delay(milliseconds: number): Promise<void> {
   await new Promise<void>((resolve) => {
     setTimeout(resolve, milliseconds);
   });
+}
+
+async function runScenario(
+  name: string,
+  scenario: () => Promise<void>,
+): Promise<void> {
+  process.stdout.write(`\n[extension integration] ${name}\n`);
+  try {
+    await scenario();
+    process.stdout.write(`[extension integration] passed: ${name}\n`);
+  } catch (error: unknown) {
+    const detail =
+      error instanceof Error ? (error.stack ?? error.message) : String(error);
+    throw new Error(
+      `Extension integration scenario failed: ${name}\n${detail}`,
+      { cause: error },
+    );
+  } finally {
+    await resetExtensionTestState();
+  }
+}
+
+async function resetExtensionTestState(): Promise<void> {
+  const formatting = vscode.workspace.getConfiguration(
+    "powerAutomateWdlExpressions.format",
+  );
+  await resetFormattingConfiguration(formatting);
+  await vscode.workspace
+    .getConfiguration("powerAutomateWdlExpressions.diagnostics")
+    .update("enabled", undefined, vscode.ConfigurationTarget.Global);
+
+  await closeAllActiveEditors();
+}
+
+async function closeAllActiveEditors(): Promise<void> {
+  for (let remainingEditors = 100; remainingEditors > 0; remainingEditors -= 1) {
+    if (vscode.window.activeTextEditor === undefined) {
+      return;
+    }
+    await vscode.commands.executeCommand(
+      "workbench.action.revertAndCloseActiveEditor",
+    );
+  }
+
+  throw new Error("Unable to close all integration-test editors.");
 }
