@@ -1,0 +1,68 @@
+{
+  "complex.wdlexpr": {
+    "formatted": "if(\n    equals(\n        toLower(\n            trim(\n                coalesce(\n                    outputs('Get_User')?['body/Email'],\n                    ''\n                )\n            )\n        ),\n        'test@contoso.com'\n    ),\n    concat(\n        'Hello ',\n        outputs('Get_User')?['body/DisplayName']\n    ),\n    'Unknown'\n)",
+    "minified": "if(equals(toLower(trim(coalesce(outputs('Get_User')?['body/Email'],''))),'test@contoso.com'),concat('Hello ',outputs('Get_User')?['body/DisplayName']),'Unknown')",
+    "twoSpaceFormatted": "if(\n  equals(\n    toLower(\n      trim(\n        coalesce(\n          outputs('Get_User')?['body/Email'],\n          ''\n        )\n      )\n    ),\n    'test@contoso.com'\n  ),\n  concat(\n    'Hello ',\n    outputs('Get_User')?['body/DisplayName']\n  ),\n  'Unknown'\n)",
+    "tabFormatted": "if(\n\tequals(\n\t\ttoLower(\n\t\t\ttrim(\n\t\t\t\tcoalesce(\n\t\t\t\t\toutputs('Get_User')?['body/Email'],\n\t\t\t\t\t''\n\t\t\t\t)\n\t\t\t)\n\t\t),\n\t\t'test@contoso.com'\n\t),\n\tconcat(\n\t\t'Hello ',\n\t\toutputs('Get_User')?['body/DisplayName']\n\t),\n\t'Unknown'\n)"
+  },
+  "empty-call.wdlexpr": {
+    "formatted": "triggerBody()",
+    "minified": "triggerBody()",
+    "twoSpaceFormatted": "triggerBody()",
+    "tabFormatted": "triggerBody()"
+  },
+  "escaped-and-numeric.wdlexpr": {
+    "formatted": "if(\n    equals(-42, 3.14),\n    'It''s working',\n    ''\n)",
+    "minified": "if(equals(-42,3.14),'It''s working','')",
+    "twoSpaceFormatted": "if(\n  equals(-42, 3.14),\n  'It''s working',\n  ''\n)",
+    "tabFormatted": "if(\n\tequals(-42, 3.14),\n\t'It''s working',\n\t''\n)"
+  },
+  "incomplete-concat.wdlexpr": {
+    "formatted": null,
+    "minified": null,
+    "twoSpaceFormatted": null,
+    "tabFormatted": null
+  },
+  "incomplete-if.wdlexpr": {
+    "formatted": null,
+    "minified": null,
+    "twoSpaceFormatted": null,
+    "tabFormatted": null
+  },
+  "incomplete-safe-index.wdlexpr": {
+    "formatted": null,
+    "minified": null,
+    "twoSpaceFormatted": null,
+    "tabFormatted": null
+  },
+  "incomplete-substring.wdlexpr": {
+    "formatted": null,
+    "minified": null,
+    "twoSpaceFormatted": null,
+    "tabFormatted": null
+  },
+  "invalid-recovery.wdlexpr": {
+    "formatted": null,
+    "minified": null,
+    "twoSpaceFormatted": null,
+    "tabFormatted": null
+  },
+  "nested.wdlexpr": {
+    "formatted": "if(\n    empty(\n        variables('Name')\n    ),\n    'Unknown',\n    trim(\n        variables('Name')\n    )\n)",
+    "minified": "if(empty(variables('Name')),'Unknown',trim(variables('Name')))",
+    "twoSpaceFormatted": "if(\n  empty(\n    variables('Name')\n  ),\n  'Unknown',\n  trim(\n    variables('Name')\n  )\n)",
+    "tabFormatted": "if(\n\tempty(\n\t\tvariables('Name')\n\t),\n\t'Unknown',\n\ttrim(\n\t\tvariables('Name')\n\t)\n)"
+  },
+  "property-access.wdlexpr": {
+    "formatted": "outputs('Get_User')?['body/Email']",
+    "minified": "outputs('Get_User')?['body/Email']",
+    "twoSpaceFormatted": "outputs('Get_User')?['body/Email']",
+    "tabFormatted": "outputs('Get_User')?['body/Email']"
+  },
+  "simple.wdlexpr": {
+    "formatted": "concat('Hello ', 'World')",
+    "minified": "concat('Hello ','World')",
+    "twoSpaceFormatted": "concat('Hello ', 'World')",
+    "tabFormatted": "concat('Hello ', 'World')"
+  }
+}

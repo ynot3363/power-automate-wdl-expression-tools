@@ -54,7 +54,8 @@ also deciding whether a transformation is safe.
 Real-world complete, nested, access-chain, numeric/string, invalid, and
 incomplete examples live under `test/fixtures/expressions/sources`. The matching
 `parser-golden.json` records lexer tokens, AST output, source ranges, and parser
-diagnostics.
+diagnostics. `formatter-golden.json` records default, compact, two-space, and
+tab-indented output, using `null` when recovery makes rewriting unsafe.
 
 Run the corpus through the normal unit suite. After an intentional parser or
 lexer contract change, regenerate and review the golden diff explicitly:
@@ -66,6 +67,10 @@ npm run test:unit
 
 Every parser regression must add or extend a focused source fixture before the
 fix. Do not update goldens merely to make an unexplained failure disappear.
+Every formatter regression follows the same rule. Use `npm run
+formatter:update` when reviewing only formatter output, or `npm run
+corpus:update` to refresh both golden files after an intentional shared-corpus
+change.
 
 Inspect the representative AST during development with:
 

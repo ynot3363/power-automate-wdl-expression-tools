@@ -4,51 +4,10 @@ import {
   WdlParser,
   type ExpressionNode,
 } from "../../../../src/language";
+import { semanticAst } from "../../../support/semanticAst";
 
 function parse(source: string): ExpressionNode {
   return new WdlParser(source).parse().expression;
-}
-
-function semanticShape(node: ExpressionNode): unknown {
-  switch (node.type) {
-    case "FunctionCall":
-      return {
-        type: node.type,
-        name: node.name,
-        arguments: node.arguments.map(semanticShape),
-      };
-    case "StringLiteral":
-      return { type: node.type, value: node.value };
-    case "NumberLiteral":
-      return { type: node.type, value: node.value, numberKind: node.numberKind };
-    case "BooleanLiteral":
-      return { type: node.type, value: node.value };
-    case "NullLiteral":
-      return { type: node.type };
-    case "Identifier":
-      return { type: node.type, name: node.name };
-    case "PropertyAccess":
-      return {
-        type: node.type,
-        target: semanticShape(node.target),
-        property: semanticShape(node.property),
-        isSafe: node.isSafe,
-      };
-    case "IndexAccess":
-      return {
-        type: node.type,
-        target: semanticShape(node.target),
-        index: semanticShape(node.index),
-        isSafe: node.isSafe,
-      };
-    case "ParenthesizedExpression":
-    case "AtExpression":
-      return { type: node.type, expression: semanticShape(node.expression) };
-    case "MissingExpression":
-      return { type: node.type, expected: node.expected };
-    case "Unknown":
-      return { type: node.type, raw: node.raw };
-  }
 }
 
 describe("WdlFormatter", () => {
@@ -113,14 +72,14 @@ describe("WdlFormatter", () => {
     }
 
     expect(formatter.format(parse(formatted))).toBe(formatted);
-    expect(semanticShape(parse(formatted))).toEqual(semanticShape(original));
+    expect(semanticAst(parse(formatted))).toEqual(semanticAst(original));
 
     const minified = formatter.minify(original);
     expect(minified).toBeDefined();
     if (minified === undefined) {
       return;
     }
-    expect(semanticShape(parse(minified))).toEqual(semanticShape(original));
+    expect(semanticAst(parse(minified))).toEqual(semanticAst(original));
   });
 
   it("rejects invalid indentation options", () => {

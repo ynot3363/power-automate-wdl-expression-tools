@@ -603,6 +603,62 @@
     },
     "diagnostics": []
   },
+  "empty-call.wdlexpr": {
+    "source": "triggerBody()\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "triggerBody",
+        "lexeme": "triggerBody",
+        "start": 0,
+        "end": 11
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 11,
+        "end": 12
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 12,
+        "end": 13
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 14,
+        "end": 14
+      }
+    ],
+    "ast": {
+      "type": "FunctionCall",
+      "name": "triggerBody",
+      "arguments": [],
+      "nameRange": {
+        "start": 0,
+        "end": 11
+      },
+      "openParenRange": {
+        "start": 11,
+        "end": 12
+      },
+      "closeParenRange": {
+        "start": 12,
+        "end": 13
+      },
+      "isClosed": true,
+      "range": {
+        "start": 0,
+        "end": 13
+      }
+    },
+    "diagnostics": []
+  },
   "escaped-and-numeric.wdlexpr": {
     "source": "if(equals(-42, 3.14), 'It''s working', '')\n",
     "tokens": [
