@@ -32,6 +32,46 @@ numbers, boolean and null literals, delimiters, and property/index access.
 Function names are highlighted syntactically. Catalog-backed function validity
 and semantic analysis are delivered by later implementation stories.
 
+### Formatting
+
+Use VS Code's **Format Document** command to format a complete expression, or
+select one complete expression and run **Format Selection**. Unsafe partial or
+incomplete selections are left unchanged.
+
+Formatting uses four spaces by default. Configure
+`powerAutomateWdlExpressions.format.indentSize` to change the indentation width
+or set `powerAutomateWdlExpressions.format.useTabs` to `true` to indent with
+tabs. Both settings can be scoped to a workspace, folder, or language.
+
+### Function help
+
+Hover over a recognized function name to see its catalog-backed signatures,
+parameters, return types, examples, and a link to the Microsoft reference. The
+catalog is stored with the extension and does not fetch remote documentation or
+know the actions, variables, or schemas in a particular flow.
+
+Signature help opens after `(` and `,` and tracks the active argument for known
+functions, including nested and incomplete calls. Signatures describe catalog
+types only; they cannot suggest values from a particular flow or connector.
+
+Function completion filters the built-in catalog as you type and inserts calls
+as snippets with ordered parameter tab stops. Completion covers function names
+only; it does not suggest variables, actions, triggers, connectors, or other
+runtime values from a flow.
+
+### Diagnostics
+
+Syntax errors, unknown functions, argument-count errors, and provable argument-
+type errors appear in VS Code's Problems panel with stable `WDL1000`, `WDL1100`,
+`WDL1200`, and `WDL1300` code families. Changes are analyzed after a 200 ms
+debounce. Set `powerAutomateWdlExpressions.diagnostics.enabled` to `false` to
+disable and clear these diagnostics for an applicable resource.
+
+Analysis is intentionally conservative: values obtained from flow variables,
+actions, triggers, properties, and other runtime context remain unknown and do
+not produce speculative type errors. The extension does not provide quick
+fixes or flow-aware validation.
+
 ## Prerequisites
 
 - Node.js 24 or another Node.js version supported by the package toolchain

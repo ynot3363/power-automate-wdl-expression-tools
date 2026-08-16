@@ -89,3 +89,22 @@ onto indented argument lines; simple literal-only calls remain compact.
 missing delimiters, missing expressions, or unknown nodes make a semantic
 rewrite unsafe. Callers must treat that result as “no edit,” not as empty text.
 Complex line-width wrapping is intentionally outside V1.
+
+## Function Catalog Schema
+
+Function metadata enters the engine as untrusted JSON-shaped data and is not
+exposed as `WdlFunctionDefinition` objects until runtime validation succeeds.
+Each definition contains a unique name, one of the planned categories, a
+description, one or more signatures, optional examples, and an optional HTTP(S)
+documentation URL.
+
+Each signature has a supported WDL return type and an ordered parameter list.
+Parameters have a name, one or more WDL types, a required flag, and optional
+variadic and description fields. Required parameters cannot follow optional
+ones, and a variadic parameter must be unique and last. Duplicate names and
+duplicate signatures are rejected case-insensitively.
+
+Catalog lookup and prefix matching are case-insensitive and return definitions
+in deterministic name order. Add or review catalog JSON with the same care as
+TypeScript: include focused validation tests, authoritative documentation URLs,
+and provenance notes when the actual dataset is introduced.

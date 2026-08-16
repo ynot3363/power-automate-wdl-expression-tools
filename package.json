@@ -19,6 +19,30 @@
     "Programming Languages"
   ],
   "contributes": {
+    "configuration": {
+      "title": "Power Automate WDL Expressions",
+      "properties": {
+        "powerAutomateWdlExpressions.format.indentSize": {
+          "type": "number",
+          "default": 4,
+          "minimum": 1,
+          "scope": "resource",
+          "description": "Number of spaces used for each WDL expression indentation level."
+        },
+        "powerAutomateWdlExpressions.format.useTabs": {
+          "type": "boolean",
+          "default": false,
+          "scope": "resource",
+          "description": "Use tabs instead of spaces when formatting WDL expressions."
+        },
+        "powerAutomateWdlExpressions.diagnostics.enabled": {
+          "type": "boolean",
+          "default": true,
+          "scope": "resource",
+          "description": "Enable syntax and static semantic diagnostics for WDL expression documents."
+        }
+      }
+    },
     "commands": [
       {
         "command": "powerAutomateWdlExpressions.newExpression",
@@ -54,7 +78,8 @@
     "build": "npm run build:extension && npm run build:tests",
     "build:extension": "esbuild src/extension/extension.ts --bundle --external:vscode --format=cjs --platform=node --target=node20 --outfile=dist/extension.js",
     "build:tests": "tsc --project tsconfig.test.json",
-    "corpus:update": "npm run corpus:update:parser && npm run formatter:update",
+    "corpus:update": "npm run corpus:update:parser && npm run corpus:update:analyzer && npm run formatter:update",
+    "corpus:update:analyzer": "tsx scripts/updateAnalyzerGoldens.ts",
     "corpus:update:parser": "tsx scripts/updateExpressionGoldens.ts",
     "formatter:update": "tsx scripts/updateFormatterGoldens.ts",
     "inspect:ast": "tsx scripts/printAst.ts",
