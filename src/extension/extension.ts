@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { registerNewExpressionCommand } from "./commands/newExpression";
+import { WdlDiagnosticsManager } from "./diagnostics/wdlDiagnosticsManager";
 import { WdlCompletionProvider } from "./providers/completionProvider";
 import {
   WdlDocumentFormattingProvider,
@@ -40,10 +41,11 @@ export function activate(context: vscode.ExtensionContext): void {
       wdlDocumentSelector,
       new WdlCompletionProvider(analysis),
     ),
+    new WdlDiagnosticsManager(analysis),
   );
 }
 
 /** Release extension resources. */
 export function deactivate(): void {
-  // No resources are allocated by the scaffold.
+  // VS Code disposes every resource registered with the extension context.
 }

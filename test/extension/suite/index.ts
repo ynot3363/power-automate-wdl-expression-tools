@@ -49,6 +49,13 @@ export async function run(): Promise<void> {
     false,
     "The formatter should use spaces by default.",
   );
+  equal(
+    packageJson.contributes.configuration.properties[
+      "powerAutomateWdlExpressions.diagnostics.enabled"
+    ]?.default,
+    true,
+    "Diagnostics should be enabled by default.",
+  );
 
   const languages = await vscode.languages.getLanguages();
   ok(languages.includes(LANGUAGE_ID), "The WDL language should be registered.");
@@ -85,6 +92,7 @@ export async function run(): Promise<void> {
     await verifyHover();
     await verifySignatureHelp();
     await verifyCompletion();
+    await verifyDiagnostics();
   } finally {
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
     await rm(fixtureDirectory, { force: true, recursive: true });
@@ -511,4 +519,187 @@ function completionSnippet(item: vscode.CompletionItem): string | undefined {
   return item.insertText instanceof vscode.SnippetString
     ? item.insertText.value
     : undefined;
+}
+
+async function verifyDiagnostics(): Promise<void> {
+  const invalidSource =
+    "if(mystery(), substring(true, 'start'), toLower())";
+  const invalidDocument = await openExpression(invalidSource);
+  const invalidDiagnostics = await waitForDiagnostics(
+    invalidDocument.uri,
+    (values) => values.length === 4,
+    "Expected semantic diagnostics for the complete invalid expression.",
+  );
+  equal(
+    invalidDiagnostics.map(diagnosticCode).join(","),
+    "WDL1101,WDL1301,WDL1301,WDL1201",
+    "Problems should preserve stable engine diagnostic codes.",
+  );
+  const unknownFunction = invalidDiagnostics[0];
+  ok(unknownFunction, "Expected an unknown-function diagnostic.");
+  equal(unknownFunction.severity, vscode.DiagnosticSeverity.Error);
+  equal(unknownFunction.source, "Power Automate WDL");
+  equal(
+    invalidDocument.getText(unknownFunction.range),
+    "mystery",
+    "Diagnostic offsets should map to the exact editor range.",
+  );
+
+  const incompleteDocument = await openExpression("concat('a',");
+  const incompleteDiagnostics = await waitForDiagnostics(
+    incompleteDocument.uri,
+    (values) => values.length === 2,
+    "Expected parser diagnostics for ordinary incomplete input.",
+  );
+  ok(
+    incompleteDiagnostics.every((diagnostic) =>
+      diagnosticCode(diagnostic).startsWith("WDL100"),
+    ),
+    "Incomplete input should retain parser diagnostics without semantic cascades.",
+  );
+
+  const conservativeDocument = await openExpression(
+    "toLower(variables('runtime'))",
+  );
+  await delay(250);
+  equal(
+    vscode.languages.getDiagnostics(conservativeDocument.uri).length,
+    0,
+    "Unknown runtime values should not cause speculative type diagnostics.",
+  );
+
+  const debounceDocument = await openExpression("concat('a', 'b')");
+  await replaceDocument(debounceDocument, "mystery()");
+  await delay(50);
+  equal(
+    vscode.languages.getDiagnostics(debounceDocument.uri).length,
+    0,
+    "Changes should wait for the documented debounce before publishing.",
+  );
+  await waitForDiagnostics(
+    debounceDocument.uri,
+    (values) => values.some((diagnostic) => diagnosticCode(diagnostic) === "WDL1101"),
+    "Expected the debounced unknown-function diagnostic.",
+  );
+
+  await replaceDocument(debounceDocument, "toLower(true)");
+  await replaceDocument(debounceDocument, "concat('a', 'b')");
+  await waitForDiagnostics(
+    debounceDocument.uri,
+    (values) => values.length === 0,
+    "The final document version should clear stale scheduled diagnostics.",
+  );
+
+  const diagnosticConfiguration = vscode.workspace.getConfiguration(
+    "powerAutomateWdlExpressions.diagnostics",
+  );
+  try {
+    await diagnosticConfiguration.update(
+      "enabled",
+      false,
+      vscode.ConfigurationTarget.Global,
+    );
+    await waitForDiagnostics(
+      invalidDocument.uri,
+      (values) => values.length === 0,
+      "Disabling diagnostics should clear published Problems.",
+    );
+    await replaceDocument(invalidDocument, "anotherMystery()");
+    await delay(250);
+    equal(
+      vscode.languages.getDiagnostics(invalidDocument.uri).length,
+      0,
+      "Disabled diagnostics should remain clear after edits.",
+    );
+  } finally {
+    await diagnosticConfiguration.update(
+      "enabled",
+      undefined,
+      vscode.ConfigurationTarget.Global,
+    );
+  }
+  await waitForDiagnostics(
+    invalidDocument.uri,
+    (values) => values.some((diagnostic) => diagnosticCode(diagnostic) === "WDL1101"),
+    "Re-enabling diagnostics should analyze open WDL documents.",
+  );
+
+  const languageDocument = await openExpression("mystery()");
+  await waitForDiagnostics(
+    languageDocument.uri,
+    (values) => values.length === 1,
+    "Expected diagnostics before changing the document language.",
+  );
+  await vscode.languages.setTextDocumentLanguage(languageDocument, "plaintext");
+  await waitForDiagnostics(
+    languageDocument.uri,
+    (values) => values.length === 0,
+    "Changing away from WDL should clear diagnostics.",
+  );
+
+  const closeDocument = await openExpression("mystery()");
+  equal(
+    vscode.window.activeTextEditor?.document.uri.toString(),
+    closeDocument.uri.toString(),
+    "The close lifecycle fixture should be the active editor.",
+  );
+  await waitForDiagnostics(
+    closeDocument.uri,
+    (values) => values.length === 1,
+    "Expected diagnostics before closing the document.",
+  );
+  await vscode.commands.executeCommand(
+    "workbench.action.revertAndCloseActiveEditor",
+  );
+  await waitForDiagnostics(
+    closeDocument.uri,
+    (values) => values.length === 0,
+    "Closing a WDL document should clear its diagnostics.",
+  );
+}
+
+function diagnosticCode(diagnostic: Pick<vscode.Diagnostic, "code">): string {
+  const code = diagnostic.code;
+  if (code === undefined) {
+    return "";
+  }
+  return typeof code === "object" ? String(code.value) : String(code);
+}
+
+async function replaceDocument(
+  document: vscode.TextDocument,
+  content: string,
+): Promise<void> {
+  const edit = new vscode.WorkspaceEdit();
+  edit.replace(
+    document.uri,
+    new vscode.Range(
+      document.positionAt(0),
+      document.positionAt(document.getText().length),
+    ),
+    content,
+  );
+  equal(await vscode.workspace.applyEdit(edit), true, "The test edit should apply.");
+}
+
+async function waitForDiagnostics(
+  uri: vscode.Uri,
+  predicate: (diagnostics: readonly vscode.Diagnostic[]) => boolean,
+  message: string,
+): Promise<readonly vscode.Diagnostic[]> {
+  const timeoutAt = Date.now() + 2_000;
+  while (Date.now() < timeoutAt) {
+    const diagnostics = vscode.languages.getDiagnostics(uri);
+    if (predicate(diagnostics)) {
+      return diagnostics;
+    }
+    await delay(25);
+  }
+  throw new Error(message);
+}
+
+async function delay(milliseconds: number): Promise<void> {
+  await new Promise<void>((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
 }

@@ -34,6 +34,12 @@
           "default": false,
           "scope": "resource",
           "description": "Use tabs instead of spaces when formatting WDL expressions."
+        },
+        "powerAutomateWdlExpressions.diagnostics.enabled": {
+          "type": "boolean",
+          "default": true,
+          "scope": "resource",
+          "description": "Enable syntax and static semantic diagnostics for WDL expression documents."
         }
       }
     },
