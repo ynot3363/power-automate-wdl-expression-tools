@@ -122,45 +122,11 @@ producing speculative errors.
 - Visual Studio Code 1.125 or newer
 - No Power Platform sign-in is required
 
-## Development
+## Development and contributing
 
-Install dependencies and run the fast repository checks:
-
-```sh
-npm ci
-npm run validate
-```
-
-Run the Extension Host suite separately, or run every local quality gate:
-
-```sh
-npm run test:integration
-npm run test:all
-```
-
-The integration suite launches a clean VS Code host and reports a named
-scenario for language registration, commands, formatting, hover, signature
-help, completion, and diagnostic lifecycle behavior. It runs against the
-pinned VS Code version configured by the test runner. On headless Linux, use:
-
-```sh
-xvfb-run -a npm run test:integration
-```
-
-Pull requests and pushes to `main` run the same locked install, lint,
-typecheck, unit-test, and build gates in GitHub Actions. A separate Linux job
-runs the Extension Host suite under `xvfb-run`, so editor integration failures
-remain distinct from the fast language-engine checks. Superseded runs on the
-same branch are cancelled automatically.
-
-Open the repository in VS Code and run the **Run Extension** launch
-configuration for manual development. The **Run Extension Integration Tests**
-launch configuration supports interactive test debugging.
-
-The reusable engine lives under `src/language` and never imports `vscode`.
-Editor commands, providers, diagnostics, and lifecycle adapters live under
-`src/extension`. See [Language engine](docs/language-engine.md) for the detailed
-boundary.
+See the
+[development guide](https://github.com/ynot3363/power-automate-wdl-expression-tools/blob/main/docs/development.md)
+for repository setup, testing, debugging, and architecture notes.
 
 ## Privacy
 
