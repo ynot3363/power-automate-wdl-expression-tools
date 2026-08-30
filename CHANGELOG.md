@@ -3,6 +3,14 @@
 All notable changes to Power Automate WDL Expression Tools are documented in
 this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.0.1] - 2026-08-30
+
+### Changed
+
+- Refocused the README as the Visual Studio Marketplace homepage and moved
+  contributor setup, testing, debugging, and architecture notes into a
+  dedicated development guide.
+
 ## [1.0.0] - 2026-08-16
 
 ### Added
@@ -18,4 +26,5 @@ this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1
 - Shared versioned document-analysis cache and lifecycle cleanup.
 - Unit, corpus, grammar, and Extension Host integration test coverage.
 
+[1.0.1]: https://github.com/ynot3363/power-automate-wdl-expression-tools/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/ynot3363/power-automate-wdl-expression-tools/releases/tag/v1.0.0
