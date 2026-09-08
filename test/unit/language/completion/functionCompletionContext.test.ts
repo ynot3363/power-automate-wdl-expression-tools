@@ -18,7 +18,17 @@ describe("getWdlFunctionCompletionContext", () => {
     ["@|", "", { start: 1, end: 1 }],
     ["|", "", { start: 0, end: 0 }],
   ])("finds an applicable context in %s", (source, prefix, replacementRange) => {
-    expect(context(source)).toEqual({ prefix, replacementRange });
+    expect(context(source)).toEqual({ prefix, replacementRange, hasArgumentList: false });
+  });
+
+  it.each([
+    ["sub|('abc', 0, 1)", "sub", { start: 0, end: 3 }],
+    ["su|b ('abc', 0, 1)", "su", { start: 0, end: 3 }],
+    ["concat(|sub('abc', 0, 1), 'x')", "", { start: 7, end: 10 }],
+    ["@sub|\n('abc', 0, 1)", "sub", { start: 1, end: 4 }],
+    ["sub|(", "sub", { start: 0, end: 3 }],
+  ])("preserves existing argument lists in %s", (source, prefix, replacementRange) => {
+    expect(context(source)).toEqual({ prefix, replacementRange, hasArgumentList: true });
   });
 
   it.each([

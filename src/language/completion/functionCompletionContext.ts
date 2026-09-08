@@ -5,6 +5,7 @@ import { TokenType } from "../lexer/tokenType";
 export interface WdlFunctionCompletionContext {
   readonly prefix: string;
   readonly replacementRange: SourceRange;
+  readonly hasArgumentList: boolean;
 }
 
 export function getWdlFunctionCompletionContext(
@@ -13,6 +14,9 @@ export function getWdlFunctionCompletionContext(
 ): WdlFunctionCompletionContext | undefined {
   const significant = tokens.filter(({ type }) => type !== TokenType.EOF);
   const containing = significant.find(
+    ({ type, start, end }) =>
+      type === TokenType.Identifier && offset >= start && offset <= end,
+  ) ?? significant.find(
     ({ start, end }) => offset >= start && offset <= end,
   );
 
@@ -34,6 +38,8 @@ export function getWdlFunctionCompletionContext(
     return {
       prefix: containing.value.slice(0, Math.max(0, offset - containing.start)),
       replacementRange: { start: containing.start, end: containing.end },
+      hasArgumentList: significant.find(({ start }) => start >= containing.end)?.type
+        === TokenType.OpenParen,
     };
   }
 
@@ -48,6 +54,8 @@ export function getWdlFunctionCompletionContext(
   return {
     prefix: "",
     replacementRange: { start: offset, end: offset },
+    hasArgumentList: significant.find(({ start }) => start >= offset)?.type
+      === TokenType.OpenParen,
   };
 }
 

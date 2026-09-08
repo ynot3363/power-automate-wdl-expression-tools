@@ -3,6 +3,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import * as vscode from "vscode";
+import { loadUnsafeTransformFixtures } from "../../support/unsafeTransformFixtures";
 
 const EXTENSION_ID = "aepcodes.power-automate-wdl-expression-tools";
 const LANGUAGE_ID = "power-automate-wdl-expression";
@@ -29,6 +30,9 @@ export async function run(): Promise<void> {
       await verifyUtilityCommands(fixtureDirectory);
     });
     await runScenario("native document and selection formatting", verifyFormatting);
+    await runScenario("transform safety regressions", async () => {
+      await verifyTransformSafety(extension.extensionPath);
+    });
     await runScenario("catalog-backed hover", verifyHover);
     await runScenario("nested signature help", verifySignatureHelp);
     await runScenario("catalog-backed completion", verifyCompletion);
@@ -334,6 +338,47 @@ async function resetFormattingConfiguration(
   );
 }
 
+async function verifyTransformSafety(repositoryRoot: string): Promise<void> {
+  for (const { source, selectedText } of await loadUnsafeTransformFixtures(repositoryRoot)) {
+    const document = await openExpression(source);
+    const editor = vscode.window.activeTextEditor;
+    ok(editor);
+    const selection = selectedText ?? source;
+    const start = source.indexOf(selection);
+    const range = new vscode.Selection(
+      document.positionAt(start),
+      document.positionAt(start + selection.length),
+    );
+    await applyRangeFormatting(document, range);
+    equal(document.getText(), source, `Format Selection must preserve unsafe input: ${source}`);
+    if (selectedText === undefined) {
+      await applyDocumentFormatting(document);
+      equal(document.getText(), source, `Format Document must preserve rejected tokens: ${source}`);
+    }
+    for (const command of [FORMAT_EXPRESSION_COMMAND_ID, MINIFY_EXPRESSION_COMMAND_ID]) {
+      editor.selection = range;
+      await vscode.commands.executeCommand(command);
+      equal(document.getText(), source, `${command} must preserve an unsafe selection: ${source}`);
+      if (selectedText === undefined) {
+        editor.selection = new vscode.Selection(0, 0, 0, 0);
+        await vscode.commands.executeCommand(command);
+        equal(document.getText(), source, `${command} must preserve rejected tokens: ${source}`);
+      }
+    }
+  }
+
+  const document = await openExpression("concat(string(add(1,2)), 'suffix')");
+  const start = document.getText().indexOf("add(");
+  await applyRangeFormatting(document, new vscode.Range(
+    document.positionAt(start), document.positionAt(start + "add(1,2)".length),
+  ));
+  equal(document.getText(), "concat(string(add(1, 2)), 'suffix')", "A complete nested expression remains formattable.");
+
+  const unknownDocument = await openExpression("mystery(1,2)");
+  await applyDocumentFormatting(unknownDocument);
+  equal(unknownDocument.getText(), "mystery(1, 2)", "Semantic diagnostics must not prevent safe formatting.");
+}
+
 async function openExpression(content: string): Promise<vscode.TextDocument> {
   const document = await vscode.workspace.openTextDocument({
     language: LANGUAGE_ID,
@@ -506,6 +551,13 @@ function hoverMarkdown(hover: vscode.Hover | undefined): string {
 }
 
 async function verifySignatureHelp(): Promise<void> {
+  const separatorDocument = await openExpression("substring('a,b' \n , 0, 1)");
+  const separator = separatorDocument.getText().indexOf(", 0");
+  const beforeComma = await executeSignatureHelp(separatorDocument, separatorDocument.positionAt(separator));
+  equal(beforeComma?.activeParameter, 0, "Whitespace before a comma belongs to the preceding argument.");
+  const afterComma = await executeSignatureHelp(separatorDocument, separatorDocument.positionAt(separator + 1));
+  equal(afterComma?.activeParameter, 1, "Only crossing the comma should advance the parameter.");
+
   const firstDocument = await openExpression("concat(");
   const first = await executeSignatureHelp(
     firstDocument,
@@ -608,6 +660,22 @@ function signatureParameterDocumentation(
 }
 
 async function verifyCompletion(): Promise<void> {
+  for (const marked of ["sub|('abc', 0, 1)", "su|b ('abc', 0, 1)", "concat(|sub('abc', 0, 1), 'x')"]) {
+    const offset = marked.indexOf("|");
+    const source = marked.replace("|", "");
+    const document = await openExpression(source);
+    const item = (await executeCompletion(document, document.positionAt(offset)))
+      .find((candidate) => completionLabel(candidate) === "substring");
+    ok(item, "Existing calls should offer function-name completion.");
+    ok(typeof item.insertText === "string", "Existing calls must insert only a function name.");
+    const range = item.range instanceof vscode.Range ? item.range : item.range?.replacing;
+    ok(range);
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(document.uri, range, item.insertText);
+    ok(await vscode.workspace.applyEdit(edit));
+    equal(document.getText(), source.replace("sub", "substring"), "Completion must preserve the existing arguments.");
+  }
+
   const prefixDocument = await openExpression("sub");
   const prefixItems = await executeCompletion(
     prefixDocument,

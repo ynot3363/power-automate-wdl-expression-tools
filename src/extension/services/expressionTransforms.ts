@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 import {
   defaultFormatterOptions,
+  hasWdlSyntaxErrors,
+  isWdlFormattingRangeSafe,
   WdlFormatter,
   type FormatterOptions,
 } from "../../language";
@@ -22,6 +24,9 @@ export function createDocumentTransform(
 ): WdlTransformResult {
   const source = document.getText();
   const result = analysis.analyzeDocument(document);
+  if (hasWdlSyntaxErrors(result.diagnostics)) {
+    return { kind: "unsafe" };
+  }
   return createTransformResult(
     document,
     fullDocumentRange(document),
@@ -42,8 +47,17 @@ export function createRangeTransform(
     return { kind: "unchanged" };
   }
 
+  const documentResult = analysis.analyzeDocument(document);
+  if (!isWdlFormattingRangeSafe(documentResult.tokens, {
+    start: document.offsetAt(range.start),
+    end: document.offsetAt(range.end),
+  })) {
+    return { kind: "unsafe" };
+  }
+
   const result = analysis.analyzeText(source);
   if (
+    hasWdlSyntaxErrors(result.diagnostics) ||
     result.expression.range.start !== 0 ||
     result.expression.range.end !== source.length
   ) {

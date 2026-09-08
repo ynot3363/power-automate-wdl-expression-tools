@@ -32,6 +32,7 @@ export {
   resolveFormatterOptions,
 } from "./formatter/formatterOptions";
 export { WdlFormatter } from "./formatter/wdlFormatter";
+export { hasWdlSyntaxErrors, isWdlFormattingRangeSafe } from "./formatter/formattingSafety";
 export type { WdlFunctionCompletionContext } from "./completion/functionCompletionContext";
 export { getWdlFunctionCompletionContext } from "./completion/functionCompletionContext";
 export type { WdlType } from "./analyzer/wdlTypes";

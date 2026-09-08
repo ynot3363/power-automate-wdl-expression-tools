@@ -29,7 +29,7 @@ export class WdlCompletionProvider implements vscode.CompletionItemProvider {
       document.positionAt(context.replacementRange.end),
     );
     const items = wdlFunctionCatalog.matchPrefix(context.prefix).map((definition) =>
-      createCompletionItem(definition, replacementRange),
+      createCompletionItem(definition, replacementRange, context.hasArgumentList),
     );
     return new vscode.CompletionList(items, false);
   }
@@ -38,6 +38,7 @@ export class WdlCompletionProvider implements vscode.CompletionItemProvider {
 function createCompletionItem(
   definition: WdlFunctionDefinition,
   replacementRange: vscode.Range,
+  hasArgumentList: boolean,
 ): vscode.CompletionItem {
   const signature = definition.signatures[0];
   const item = new vscode.CompletionItem(
@@ -49,7 +50,9 @@ function createCompletionItem(
     .join(" | ")}`;
   item.documentation = completionDocumentation(definition);
   item.filterText = definition.name;
-  item.insertText = createSnippet(definition.name, signature);
+  item.insertText = hasArgumentList
+    ? definition.name
+    : createSnippet(definition.name, signature);
   item.range = replacementRange;
   item.sortText = definition.name.toLocaleLowerCase("en-US");
   return item;
