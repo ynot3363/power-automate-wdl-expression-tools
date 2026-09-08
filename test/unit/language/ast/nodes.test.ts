@@ -15,6 +15,7 @@ const examples = [
     type: "FunctionCall",
     name: "concat",
     arguments: [],
+    commaRanges: [],
     nameRange: sourceRange(0, 6),
     openParenRange: sourceRange(6, 7),
     closeParenRange: sourceRange(7, 8),

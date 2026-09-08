@@ -6,6 +6,21 @@ function diagnostics(source: string) {
 }
 
 describe("WdlAnalyzer", () => {
+  it.each(["coalesce('x')", "coalesce(null)", "coalesce(null, 'x')", "coalesce(null, null, 'x')"])(
+    "accepts one or more coalesce arguments in %s", (source) => {
+      expect(diagnostics(source)).toEqual([]);
+    },
+  );
+
+  it("still requires at least one coalesce argument", () => {
+    expect(diagnostics("coalesce()")).toMatchObject([{ code: "WDL1201" }]);
+  });
+
+  it("recomputes inference after source changes on the same analyzer", () => {
+    const analyzer = new WdlAnalyzer();
+    expect(analyzer.analyze("not(first('abc'))").diagnostics).toMatchObject([{ code: "WDL1301" }]);
+    expect(analyzer.analyze("not(first(array('abc')))").diagnostics).toEqual([]);
+  });
   it("accepts valid nested calls and case-insensitive function names", () => {
     expect(
       diagnostics("IF(equals(1, 1), concat('a', 'b'), toUpper('c'))"),

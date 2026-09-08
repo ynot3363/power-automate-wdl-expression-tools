@@ -1,4 +1,208 @@
 {
+  "argument-separator-whitespace.wdlexpr": {
+    "source": "substring(concat('a,b', 'c')\n  , 0 , 1)\n",
+    "tokens": [
+      {
+        "type": "Identifier",
+        "value": "substring",
+        "lexeme": "substring",
+        "start": 0,
+        "end": 9
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 9,
+        "end": 10
+      },
+      {
+        "type": "Identifier",
+        "value": "concat",
+        "lexeme": "concat",
+        "start": 10,
+        "end": 16
+      },
+      {
+        "type": "OpenParen",
+        "value": "(",
+        "lexeme": "(",
+        "start": 16,
+        "end": 17
+      },
+      {
+        "type": "StringLiteral",
+        "value": "a,b",
+        "lexeme": "'a,b'",
+        "start": 17,
+        "end": 22
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 22,
+        "end": 23
+      },
+      {
+        "type": "StringLiteral",
+        "value": "c",
+        "lexeme": "'c'",
+        "start": 24,
+        "end": 27
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 27,
+        "end": 28
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 31,
+        "end": 32
+      },
+      {
+        "type": "IntegerLiteral",
+        "value": "0",
+        "lexeme": "0",
+        "start": 33,
+        "end": 34
+      },
+      {
+        "type": "Comma",
+        "value": ",",
+        "lexeme": ",",
+        "start": 35,
+        "end": 36
+      },
+      {
+        "type": "IntegerLiteral",
+        "value": "1",
+        "lexeme": "1",
+        "start": 37,
+        "end": 38
+      },
+      {
+        "type": "CloseParen",
+        "value": ")",
+        "lexeme": ")",
+        "start": 38,
+        "end": 39
+      },
+      {
+        "type": "EOF",
+        "value": "",
+        "lexeme": "",
+        "start": 40,
+        "end": 40
+      }
+    ],
+    "ast": {
+      "type": "FunctionCall",
+      "name": "substring",
+      "arguments": [
+        {
+          "type": "FunctionCall",
+          "name": "concat",
+          "arguments": [
+            {
+              "type": "StringLiteral",
+              "value": "a,b",
+              "raw": "'a,b'",
+              "range": {
+                "start": 17,
+                "end": 22
+              }
+            },
+            {
+              "type": "StringLiteral",
+              "value": "c",
+              "raw": "'c'",
+              "range": {
+                "start": 24,
+                "end": 27
+              }
+            }
+          ],
+          "commaRanges": [
+            {
+              "start": 22,
+              "end": 23
+            }
+          ],
+          "nameRange": {
+            "start": 10,
+            "end": 16
+          },
+          "openParenRange": {
+            "start": 16,
+            "end": 17
+          },
+          "closeParenRange": {
+            "start": 27,
+            "end": 28
+          },
+          "isClosed": true,
+          "range": {
+            "start": 10,
+            "end": 28
+          }
+        },
+        {
+          "type": "NumberLiteral",
+          "value": 0,
+          "raw": "0",
+          "numberKind": "integer",
+          "range": {
+            "start": 33,
+            "end": 34
+          }
+        },
+        {
+          "type": "NumberLiteral",
+          "value": 1,
+          "raw": "1",
+          "numberKind": "integer",
+          "range": {
+            "start": 37,
+            "end": 38
+          }
+        }
+      ],
+      "commaRanges": [
+        {
+          "start": 31,
+          "end": 32
+        },
+        {
+          "start": 35,
+          "end": 36
+        }
+      ],
+      "nameRange": {
+        "start": 0,
+        "end": 9
+      },
+      "openParenRange": {
+        "start": 9,
+        "end": 10
+      },
+      "closeParenRange": {
+        "start": 38,
+        "end": 39
+      },
+      "isClosed": true,
+      "range": {
+        "start": 0,
+        "end": 39
+      }
+    },
+    "diagnostics": []
+  },
   "complex.wdlexpr": {
     "source": "if(\n    equals(\n        toLower(\n            trim(\n                coalesce(\n                    outputs('Get_User')?['body/Email'],\n                    ''\n                )\n            )\n        ),\n        'test@contoso.com'\n    ),\n    concat(\n        'Hello ',\n        outputs('Get_User')?['body/DisplayName']\n    ),\n    'Unknown'\n)\n",
     "tokens": [
@@ -347,6 +551,7 @@
                                 }
                               }
                             ],
+                            "commaRanges": [],
                             "nameRange": {
                               "start": 97,
                               "end": 104
@@ -399,6 +604,12 @@
                           }
                         }
                       ],
+                      "commaRanges": [
+                        {
+                          "start": 131,
+                          "end": 132
+                        }
+                      ],
                       "nameRange": {
                         "start": 67,
                         "end": 75
@@ -418,6 +629,7 @@
                       }
                     }
                   ],
+                  "commaRanges": [],
                   "nameRange": {
                     "start": 45,
                     "end": 49
@@ -437,6 +649,7 @@
                   }
                 }
               ],
+              "commaRanges": [],
               "nameRange": {
                 "start": 24,
                 "end": 31
@@ -463,6 +676,12 @@
                 "start": 207,
                 "end": 225
               }
+            }
+          ],
+          "commaRanges": [
+            {
+              "start": 197,
+              "end": 198
             }
           ],
           "nameRange": {
@@ -512,6 +731,7 @@
                     }
                   }
                 ],
+                "commaRanges": [],
                 "nameRange": {
                   "start": 271,
                   "end": 278
@@ -555,6 +775,12 @@
               }
             }
           ],
+          "commaRanges": [
+            {
+              "start": 261,
+              "end": 262
+            }
+          ],
           "nameRange": {
             "start": 237,
             "end": 243
@@ -581,6 +807,16 @@
             "start": 323,
             "end": 332
           }
+        }
+      ],
+      "commaRanges": [
+        {
+          "start": 231,
+          "end": 232
+        },
+        {
+          "start": 317,
+          "end": 318
         }
       ],
       "nameRange": {
@@ -639,6 +875,7 @@
       "type": "FunctionCall",
       "name": "triggerBody",
       "arguments": [],
+      "commaRanges": [],
       "nameRange": {
         "start": 0,
         "end": 11
@@ -790,6 +1027,12 @@
               }
             }
           ],
+          "commaRanges": [
+            {
+              "start": 13,
+              "end": 14
+            }
+          ],
           "nameRange": {
             "start": 3,
             "end": 9
@@ -825,6 +1068,16 @@
             "start": 39,
             "end": 41
           }
+        }
+      ],
+      "commaRanges": [
+        {
+          "start": 20,
+          "end": 21
+        },
+        {
+          "start": 37,
+          "end": 38
         }
       ],
       "nameRange": {
@@ -885,6 +1138,7 @@
           }
         }
       ],
+      "commaRanges": [],
       "nameRange": {
         "start": 0,
         "end": 6
@@ -980,6 +1234,7 @@
               }
             }
           ],
+          "commaRanges": [],
           "nameRange": {
             "start": 3,
             "end": 9
@@ -999,6 +1254,7 @@
           }
         }
       ],
+      "commaRanges": [],
       "nameRange": {
         "start": 0,
         "end": 2
@@ -1116,6 +1372,7 @@
             }
           }
         ],
+        "commaRanges": [],
         "nameRange": {
           "start": 0,
           "end": 7
@@ -1237,6 +1494,12 @@
             "start": 19,
             "end": 19
           }
+        }
+      ],
+      "commaRanges": [
+        {
+          "start": 17,
+          "end": 18
         }
       ],
       "nameRange": {
@@ -1393,6 +1656,12 @@
               }
             }
           ],
+          "commaRanges": [
+            {
+              "start": 18,
+              "end": 19
+            }
+          ],
           "nameRange": {
             "start": 10,
             "end": 17
@@ -1410,6 +1679,12 @@
             "start": 10,
             "end": 24
           }
+        }
+      ],
+      "commaRanges": [
+        {
+          "start": 8,
+          "end": 9
         }
       ],
       "nameRange": {
@@ -1642,6 +1917,7 @@
                   }
                 }
               ],
+              "commaRanges": [],
               "nameRange": {
                 "start": 14,
                 "end": 23
@@ -1661,6 +1937,7 @@
               }
             }
           ],
+          "commaRanges": [],
           "nameRange": {
             "start": 8,
             "end": 13
@@ -1706,6 +1983,7 @@
                   }
                 }
               ],
+              "commaRanges": [],
               "nameRange": {
                 "start": 58,
                 "end": 67
@@ -1725,6 +2003,7 @@
               }
             }
           ],
+          "commaRanges": [],
           "nameRange": {
             "start": 53,
             "end": 57
@@ -1742,6 +2021,16 @@
             "start": 53,
             "end": 76
           }
+        }
+      ],
+      "commaRanges": [
+        {
+          "start": 32,
+          "end": 33
+        },
+        {
+          "start": 47,
+          "end": 48
         }
       ],
       "nameRange": {
@@ -1847,6 +2136,7 @@
             }
           }
         ],
+        "commaRanges": [],
         "nameRange": {
           "start": 0,
           "end": 7
@@ -1965,6 +2255,12 @@
             "start": 17,
             "end": 24
           }
+        }
+      ],
+      "commaRanges": [
+        {
+          "start": 15,
+          "end": 16
         }
       ],
       "nameRange": {

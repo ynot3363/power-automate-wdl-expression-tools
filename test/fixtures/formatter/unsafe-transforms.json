@@ -1,0 +1,9 @@
+[
+  { "source": "concat('a' 'b')" },
+  { "source": "concat('a','b')\nconcat('c','d')" },
+  { "source": "concat('a'?,'b')" },
+  { "source": "concat('add(1, 2)', 'suffix')", "selectedText": "add(1, 2)" },
+  { "source": "'unterminated add(1, 2)", "selectedText": "add(1, 2)" },
+  { "source": "'It''s add(1, 2)'", "selectedText": "add(1, 2)" },
+  { "source": "readd(1, 2)", "selectedText": "add(1, 2)" }
+]

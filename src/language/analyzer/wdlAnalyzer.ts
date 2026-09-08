@@ -8,7 +8,7 @@ import type { WdlDiagnostic, WdlSemanticDiagnostic } from "./analyzerDiagnostic"
 import {
   acceptsArgumentCount,
   areWdlTypesCompatible,
-  inferWdlType,
+  WdlTypeInferrer,
   parameterAt,
 } from "./typeInference";
 import type { WdlType } from "./wdlTypes";
@@ -27,7 +27,7 @@ export class WdlAnalyzer {
   public analyze(source: string): WdlAnalysisResult {
     const parseResult = new WdlParser(source).parse();
     const semanticDiagnostics: WdlSemanticDiagnostic[] = [];
-    this.analyzeExpression(parseResult.expression, semanticDiagnostics);
+    this.analyzeExpression(parseResult.expression, semanticDiagnostics, new WdlTypeInferrer(this.catalog));
 
     return {
       expression: parseResult.expression,
@@ -39,25 +39,26 @@ export class WdlAnalyzer {
   private analyzeExpression(
     expression: ExpressionNode,
     diagnostics: WdlSemanticDiagnostic[],
+    inferrer: WdlTypeInferrer,
   ): void {
     switch (expression.type) {
       case "FunctionCall":
-        this.analyzeCall(expression, diagnostics);
+        this.analyzeCall(expression, diagnostics, inferrer);
         for (const argument of expression.arguments) {
-          this.analyzeExpression(argument, diagnostics);
+          this.analyzeExpression(argument, diagnostics, inferrer);
         }
         return;
       case "IndexAccess":
-        this.analyzeExpression(expression.target, diagnostics);
-        this.analyzeExpression(expression.index, diagnostics);
+        this.analyzeExpression(expression.target, diagnostics, inferrer);
+        this.analyzeExpression(expression.index, diagnostics, inferrer);
         return;
       case "PropertyAccess":
-        this.analyzeExpression(expression.target, diagnostics);
-        this.analyzeExpression(expression.property, diagnostics);
+        this.analyzeExpression(expression.target, diagnostics, inferrer);
+        this.analyzeExpression(expression.property, diagnostics, inferrer);
         return;
       case "AtExpression":
       case "ParenthesizedExpression":
-        this.analyzeExpression(expression.expression, diagnostics);
+        this.analyzeExpression(expression.expression, diagnostics, inferrer);
         return;
       case "BooleanLiteral":
       case "Identifier":
@@ -73,6 +74,7 @@ export class WdlAnalyzer {
   private analyzeCall(
     call: FunctionCallNode,
     diagnostics: WdlSemanticDiagnostic[],
+    inferrer: WdlTypeInferrer,
   ): void {
     const definition = this.catalog.get(call.name);
     if (definition === undefined) {
@@ -103,7 +105,7 @@ export class WdlAnalyzer {
     }
 
     call.arguments.forEach((argument, index) => {
-      const inference = inferWdlType(argument, this.catalog);
+      const inference = inferrer.infer(argument);
       if (inference.isUnknown) {
         return;
       }

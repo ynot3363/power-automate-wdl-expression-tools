@@ -98,15 +98,5 @@ function containsOffset(range: SourceRange, offset: number): boolean {
 }
 
 function activeArgumentIndex(call: FunctionCallNode, offset: number): number {
-  if (call.arguments.length === 0) {
-    return 0;
-  }
-
-  for (const [index, argument] of call.arguments.entries()) {
-    if (offset <= argument.range.end) {
-      return index;
-    }
-  }
-
-  return call.arguments.length - 1;
+  return call.commaRanges.filter(({ end }) => end <= offset).length;
 }

@@ -8,6 +8,7 @@ export interface FunctionCallNode extends BaseExpressionNode {
   readonly type: "FunctionCall";
   readonly name: string;
   readonly arguments: readonly ExpressionNode[];
+  readonly commaRanges: readonly SourceRange[];
   readonly nameRange: SourceRange;
   readonly openParenRange: SourceRange;
   readonly closeParenRange: SourceRange;

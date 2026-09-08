@@ -1,4 +1,10 @@
 {
+  "argument-separator-whitespace.wdlexpr": {
+    "formatted": "substring(\n    concat('a,b', 'c'),\n    0,\n    1\n)",
+    "minified": "substring(concat('a,b','c'),0,1)",
+    "twoSpaceFormatted": "substring(\n  concat('a,b', 'c'),\n  0,\n  1\n)",
+    "tabFormatted": "substring(\n\tconcat('a,b', 'c'),\n\t0,\n\t1\n)"
+  },
   "complex.wdlexpr": {
     "formatted": "if(\n    equals(\n        toLower(\n            trim(\n                coalesce(\n                    outputs('Get_User')?['body/Email'],\n                    ''\n                )\n            )\n        ),\n        'test@contoso.com'\n    ),\n    concat(\n        'Hello ',\n        outputs('Get_User')?['body/DisplayName']\n    ),\n    'Unknown'\n)",
     "minified": "if(equals(toLower(trim(coalesce(outputs('Get_User')?['body/Email'],''))),'test@contoso.com'),concat('Hello ',outputs('Get_User')?['body/DisplayName']),'Unknown')",
