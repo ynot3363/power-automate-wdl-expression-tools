@@ -6,6 +6,11 @@ function diagnostics(source: string) {
 }
 
 describe("WdlAnalyzer", () => {
+  it("recomputes inference after source changes on the same analyzer", () => {
+    const analyzer = new WdlAnalyzer();
+    expect(analyzer.analyze("not(first('abc'))").diagnostics).toMatchObject([{ code: "WDL1301" }]);
+    expect(analyzer.analyze("not(first(array('abc')))").diagnostics).toEqual([]);
+  });
   it("accepts valid nested calls and case-insensitive function names", () => {
     expect(
       diagnostics("IF(equals(1, 1), concat('a', 'b'), toUpper('c'))"),

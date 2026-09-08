@@ -1,4 +1,8 @@
 {
+  "argument-separator-whitespace.wdlexpr": {
+    "source": "substring(concat('a,b', 'c')\n  , 0 , 1)\n",
+    "diagnostics": []
+  },
   "complex.wdlexpr": {
     "source": "if(\n    equals(\n        toLower(\n            trim(\n                coalesce(\n                    outputs('Get_User')?['body/Email'],\n                    ''\n                )\n            )\n        ),\n        'test@contoso.com'\n    ),\n    concat(\n        'Hello ',\n        outputs('Get_User')?['body/DisplayName']\n    ),\n    'Unknown'\n)\n",
     "diagnostics": []

@@ -1,7 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   areWdlTypesCompatible,
   inferWdlType,
+  getApplicableSignatures,
+  initialFunctionDefinitions,
+  WdlAnalyzer,
   WdlFunctionCatalog,
   WdlParser,
 } from "../../../../src/language";
@@ -11,6 +14,42 @@ function infer(source: string) {
 }
 
 describe("inferWdlType", () => {
+  it.each([12, 24])("bounds nested overload work at depth %i for every consumer", (depth) => {
+    const source = "first(".repeat(depth) + "'abc'" + ")".repeat(depth);
+    const expression = new WdlParser(source).parse().expression;
+    expect(expression.type).toBe("FunctionCall");
+    if (expression.type !== "FunctionCall") {
+      return;
+    }
+    const catalog = new WdlFunctionCatalog(initialFunctionDefinitions);
+    const signatures = catalog.get("first")?.signatures ?? [];
+    const get = catalog.get.bind(catalog);
+    const lookup = vi.spyOn(catalog, "get").mockImplementation((name) => {
+      if (lookup.mock.calls.length > depth * 2) {
+        throw new Error("Nested inference exceeded a linear lookup budget.");
+      }
+      return get(name);
+    });
+
+    expect(inferWdlType(expression, catalog)).toEqual({ types: ["string"], isUnknown: false });
+    lookup.mockClear();
+    expect(getApplicableSignatures(expression, signatures, catalog)).toHaveLength(1);
+    lookup.mockClear();
+    expect(new WdlAnalyzer(catalog).analyze(source).diagnostics).toEqual([]);
+    expect(lookup.mock.calls.length).toBeLessThanOrEqual(depth * 2);
+  });
+
+  it("keeps inference for the same AST isolated between catalogs", () => {
+    const expression = new WdlParser("value()").parse().expression;
+    for (const returnType of ["string", "boolean"] as const) {
+      const catalog = new WdlFunctionCatalog([{
+        name: "value", category: "Logical", description: "A catalog-specific value.",
+        signatures: [{ parameters: [], returnType }],
+      }]);
+      expect(inferWdlType(expression, catalog)).toEqual({ types: [returnType], isUnknown: false });
+    }
+  });
+
   it.each([
     ["'text'", ["string"]],
     ["42", ["integer"]],

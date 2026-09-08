@@ -178,6 +178,7 @@ export class WdlParser {
     openParen: Token,
   ): FunctionCallNode {
     const argumentsList: ExpressionNode[] = [];
+    const commaRanges: ReturnType<typeof sourceRange>[] = [];
 
     if (this.check(TokenType.EOF)) {
       argumentsList.push(this.missingExpression("argument"));
@@ -198,6 +199,8 @@ export class WdlParser {
           continue;
         }
 
+        const comma = this.previous();
+        commaRanges.push(sourceRange(comma.start, comma.end));
         if (this.check(TokenType.CloseParen) || this.check(TokenType.EOF)) {
           argumentsList.push(this.missingExpression("argument"));
           break;
@@ -217,6 +220,7 @@ export class WdlParser {
       type: "FunctionCall",
       name: nameToken.value,
       arguments: argumentsList,
+      commaRanges,
       nameRange: sourceRange(nameToken.start, nameToken.end),
       openParenRange: sourceRange(openParen.start, openParen.end),
       closeParenRange: closeParen.range,

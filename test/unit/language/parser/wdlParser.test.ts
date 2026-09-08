@@ -32,6 +32,21 @@ function types(node: ExpressionNode): unknown {
 }
 
 describe("WdlParser", () => {
+  it("retains only the current call's argument separator ranges", () => {
+    const source = "substring(concat('a,b', 'c')\n  , 0 , 1)";
+    const { expression, diagnostics } = parse(source);
+    expect(diagnostics).toEqual([]);
+    expect(expression.type).toBe("FunctionCall");
+    if (expression.type !== "FunctionCall") {
+      return;
+    }
+    const firstComma = source.indexOf(", 0");
+    const secondComma = source.indexOf(", 1");
+    expect(expression.commaRanges).toEqual([
+      { start: firstComma, end: firstComma + 1 },
+      { start: secondComma, end: secondComma + 1 },
+    ]);
+  });
   it("parses complete nested function calls", () => {
     const source = "if(empty(variables('Name')), 'Unknown', variables('Name'))";
     const result = parse(source);

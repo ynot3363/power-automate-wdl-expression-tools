@@ -41,6 +41,14 @@ describe("findFunctionCallAtArgumentOffset", () => {
     ["concat('a', 'b', |", "concat", 2],
     ["substring(\n  'abc',\n  |1\n)", "substring", 1],
     ["if(equals(1, |", "equals", 1],
+    ["substring('abc' |, 0, 1)", "substring", 0],
+    ["substring('abc' ,| 0, 1)", "substring", 1],
+    ["substring('a,b'\n |, 0, 1)", "substring", 0],
+    ["substring(concat('a', 'b') |, 0, 1)", "substring", 0],
+    ["substring(concat('a', 'b') , |0, 1)", "substring", 1],
+    ["substring('abc', 0 |, 1)", "substring", 1],
+    ["concat( ,| , 'x')", "concat", 1],
+    ["concat('x' |", "concat", 0],
   ])("finds the active argument in %s", (markedSource, name, argumentIndex) => {
     const offset = markedSource.indexOf("|");
     const source = markedSource.replace("|", "");
