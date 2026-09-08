@@ -41,7 +41,7 @@ const curatedFunctionDefinitions = [
           {
             name: "additionalValues",
             types: ["any"],
-            required: true,
+            required: false,
             variadic: true,
             description: "Additional values to test in order.",
           },
